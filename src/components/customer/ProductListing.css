@@ -1,0 +1,221 @@
+/* =========================================
+   GLOBAL THEME VARIABLES (Local Scope)
+========================================= */
+:root {
+  --green-dark: #606E52;
+  --green-mid: #91A56E;
+  --green-light: #f3f5ed;
+  --text-dark: #2d2d2d;
+  --text-muted: #6b7280;
+  --white: #FFFFFF;
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --font-heading: "Playfair Display", serif;
+  --font-ui: "Inter", "Helvetica", Arial, sans-serif;
+}
+
+/* =========================================
+   PAGE CONTAINER
+========================================= */
+.products-section {
+  text-align: center;
+  padding: 0px 5% 60px;
+  background-color: #fcfcf9;
+  /* Premium off-white */
+  min-height: 100vh;
+  font-family: var(--font-ui);
+}
+
+.products-title {
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  font-weight: 500;
+  color: var(--green-dark);
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.products-subtitle {
+  color: var(--text-muted);
+  font-size: 1.15rem;
+  max-width: 600px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+/* =========================================
+   CATEGORY FILTER (Pill Style)
+========================================= */
+.category-filter {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 50px;
+}
+
+.category-filter button {
+  background: var(--white);
+  color: var(--green-dark);
+  font-weight: 600;
+  border: 1.5px solid #e5e7eb;
+  padding: 10px 24px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.category-filter button:hover,
+.category-filter button.active {
+  background: var(--green-dark);
+  color: var(--white);
+  border-color: var(--green-dark);
+  box-shadow: 0 8px 20px rgba(96, 110, 82, 0.25);
+  transform: translateY(-2px);
+}
+
+/* =========================================
+   RESPONSIVE GRID SYSTEM (Production Ready)
+========================================= */
+.product-grid {
+  display: grid;
+  /* Logic: minmax(230px, 1fr) 
+     - 768px (iPad Portrait)  -> ~3 cards per row
+     - 1024px (iPad Landsc.) -> ~4 cards per row
+     - 1280px (Laptop)       -> ~5 cards per row
+  */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+/* MOBILE OPTIMISATION (< 600px) */
+@media (max-width: 600px) {
+  .products-section {
+    padding: 0px 20px;
+  }
+
+  .products-title {
+    font-size: 2.2rem;
+    margin-top: -30px;
+  }
+
+  .product-grid {
+    /* Single column stack for mobile */
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--green-dark, #606e52); /* Using your branding variables */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  padding: 0;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.back-btn:hover {
+  transform: translateX(-5px);
+  color: var(--green-mid, #91a56e);
+}
+
+.back-btn svg {
+  font-size: 0.9rem;
+}
+
+.listing-top-nav {
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--green-dark, #606E52);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
+}
+
+.back-btn:hover {
+  transform: translateX(-5px);
+  color: var(--green-mid, #91A56E);
+}
+
+.back-btn svg {
+  font-size: 0.9rem;
+}
+
+/* Ensure grid items look premium */
+.no-results {
+  font-style: italic;
+  font-size: 1.1rem;
+  color: #8F8B84;
+}
+
+/* =========================================
+   CATEGORY HEADER STYLING (h2)
+========================================= */
+.portfolio-section {
+  margin-top: 50px;
+  text-align: left; /* Align with the back button and grid */
+}
+
+.portfolio-section h2 {
+  font-family: var(--font-heading); /* Playfair Display */
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--green-dark);
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  position: relative;
+  letter-spacing: -0.02em;
+}
+
+/* Subtle Decorative Line after the text */
+.portfolio-section h2::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, rgba(96, 110, 82, 0.2), transparent);
+  margin-top: 4px;
+}
+
+/* Icon styling within h2 */
+.portfolio-section h2 svg {
+  font-size: 1.6rem;
+  color: var(--green-mid);
+  opacity: 0.9;
+}
+
+/* Mobile Adjustments for h2 */
+@media (max-width: 600px) {
+  .portfolio-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .portfolio-section h2::after {
+    display: none; /* Keep mobile view cleaner */
+  }
+}

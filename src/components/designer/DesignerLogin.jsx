@@ -1,0 +1,150 @@
+"use client";
+
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import "./DesignerLogin.css";
+import { designerLogin } from "../../api/designer";
+import LoadingSpinner from "../ui/LoadingSpinner";
+
+const DesignerLogin = () => {
+  const Brand = ({ children }) => <span className="brand">{children}</span>;
+  const router = useRouter();
+
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  /* =========================================
+      EASY ENCRYPTION HELPERS
+  ========================================= */
+  
+  /**
+   * Scrambles data before saving to Local Storage to prevent plain-text visibility.
+   */
+  const secureSetItem = (key, value) => {
+    if (!value) return;
+    const encodedValue = btoa(String(value)); // Encodes to Base64
+    localStorage.setItem(key, encodedValue);
+  };
+
+  /**
+   * Decodes the backend payload.
+   */
+  const decodePayload = (payload) => {
+    try {
+      return JSON.parse(atob(payload));
+    } catch (e) {
+      console.error("Payload decoding failed:", e);
+      return null;
+    }
+  };
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await designerLogin({
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
+      });
+
+      const data = res.data;
+
+      // Handle the encrypted payload from the backend
+      if (data?.payload) {
+        const decodedDesigner = decodePayload(data.payload);
+
+        if (decodedDesigner?.id) {
+          // Clear any existing plain-text identifiers
+          localStorage.removeItem("designerId");
+
+          // Save data in scrambled format for privacy in "Inspect" tool
+          secureSetItem("designerId", decodedDesigner.id);
+          
+          router.push("/designerdashboard");
+        } else {
+          throw new Error("Invalid payload data");
+        }
+      } else {
+        throw new Error("Invalid response from server");
+      }
+    } catch (err) {
+      console.error("DESIGNER LOGIN ERROR:", err);
+      setError(err?.response?.data?.message || "Invalid email or password");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="designer-login-page">
+      {loading && <LoadingSpinner message="Accessing workspace..." />}
+
+      <div className="login-box login-reveal">
+        <h1 className="login-logo">
+          <Brand>Core2Cover</Brand>
+        </h1>
+        <p className="login-sub">Login to your designer workspace</p>
+        {error && <p className="auth-error">{error}</p>}
+
+        <form onSubmit={handleLogin} className="login-form">
+          <div className="login-field">
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="login-field password-field">
+            <label>Password</label>
+            <div className="password-input-wrap">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Enter your password"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+              <span
+                className="eye-btn"
+                onClick={() => setShowPassword((s) => !s)}
+                role="button"
+                aria-label="Toggle password visibility"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
+          </div>
+
+          <button className="login-btn" type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        <p className="login-footer">
+          New to Core2Cover?{" "}
+          <Link href="/designersignup" className="login-link">
+            Sign up as Designer
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default DesignerLogin;

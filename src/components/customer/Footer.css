@@ -1,0 +1,168 @@
+/* src/components/customer/Footer.css */
+:root {
+  --olive: #606e52;
+  --text-dark: #333;
+  --text-muted: #666;
+}
+
+.footer {
+  width: 100%;
+  /* Using your specific gradient theme */
+  background: radial-gradient(900px 300px at 10% 0%, #eef0ea2e, transparent 60%),
+    linear-gradient(180deg, #ecf5d8, #e7f3cf);
+  color: var(--text-dark);
+  padding: 0 4vw;
+  font-family: sans-serif;
+  box-sizing: border-box;
+  /* STRICT HEIGHT MAINTAINED */
+  height: 115px; 
+  display: flex;
+  align-items: center;
+  overflow: hidden; /* Ensures no scrollbars if content is tight */
+}
+
+.footer-container {
+  max-width: 1400px; /* Slightly wider to prevent crowding */
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: fit-content;
+}
+
+/* LOGO WIDTH & HEIGHT MAINTAINED */
+.footer-logo {
+  width: 60px; 
+  height: 45px;
+  object-fit: contain;
+}
+
+.footer-brand span {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  /* gap: 10px; */
+}
+
+.footer-tagline {
+  font-size: 0.75rem; /* Slightly smaller to fit height */
+  margin: 0;
+  color: var(--text-muted);
+}
+
+/* COMPACT LINK STYLING */
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.footer-heading {
+  font-size: 0.8rem;
+  margin-bottom: 4px; /* Tightened for 115px height */
+  color: var(--olive);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.footer-links ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns of links to save vertical space */
+  gap: 2px 20px;
+}
+
+.footer-links ul li {
+  margin: 0;
+}
+
+.footer-links ul li a {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.footer-links ul li a:hover {
+  color: var(--olive);
+}
+
+.footer-social {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.footer-social a {
+  width: 32px; /* Slightly smaller for better fit */
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--olive);
+  font-size: 0.9rem;
+  text-decoration: none;
+  border: 1px solid rgba(96, 110, 82, 0.2);
+  transition: all 0.3s ease;
+}
+
+.footer-social a:hover {
+  background: var(--olive);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.footer-social a:hover svg {
+  color: #fff !important;
+}
+
+.footer-bottom {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: right;
+  min-width: fit-content;
+  max-width: 120px; /* Constrained to stay on right side */
+  line-height: 1.2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .footer-links {
+    display: none; /* Hide link grid on tablets to avoid collision */
+  }
+}
+
+@media (max-width: 768px) {
+  .footer {
+    height: auto; /* Required for mobile stacking */
+    padding: 20px 4vw;
+  }
+
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+  
+  .footer-links {
+    display: block;
+  }
+
+  .footer-bottom {
+    text-align: center;
+    max-width: none;
+  }
+}

@@ -1,0 +1,386 @@
+/* ======================================================
+   ROOT VARIABLES & THEME
+====================================================== */
+:root {
+  --green-dark: #606E52;
+  --green-mid: #91A56E;
+  --green-light: #C0CCA4;
+  --white: #ffffff;
+  --bg-soft: #f9fbf7;
+  --text-dark: #1a1a1a;
+  --text-muted: #8f8b84;
+  --brand-font: "CaviarDreams", sans-serif;
+  --ui-font: "Helvetica", "Arial", sans-serif;
+  --shadow-soft: 0 4px 14px rgba(0, 0, 0, 0.08);
+  --transition: all 0.3s ease;
+  --nav-height: 80px;
+}
+
+@font-face {
+  font-family: "CaviarDreams";
+  src: url("/fonts/CaviarDreams.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CaviarDreams";
+  src: url("/fonts/CaviarDreams_Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+
+/* ======================================================
+   GLOBAL RESET (Kills the Blue Links)
+====================================================== */
+.navbar a, 
+.navbar a:visited, 
+.navbar a:active,
+.navbar a:hover {
+  color: inherit !important;
+  text-decoration: none !important;
+  outline: none !important;
+}
+
+/* ======================================================
+   NAVBAR LAYOUT
+====================================================== */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: var(--nav-height);
+  background: var(--white);
+  border-bottom: 1px solid #e8eddc;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  align-items: center;
+  font-family: var(--ui-font);
+}
+
+.nav-container {
+  width: 92%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ======================================================
+   LOGO & BRANDING
+====================================================== */
+.nav-logo-link {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.nav-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand {
+  font-family: var(--brand-font);
+  font-size: 1.25rem;
+  color: var(--green-dark) !important;
+  line-height: 1;
+}
+
+.brand-bold {
+  font-weight: 700;
+  color: var(--green-dark) !important;
+}
+
+/* ======================================================
+   NAVIGATION ICONS (STACKED VERTICALLY)
+====================================================== */
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.nav-icons-desktop {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+/* THE STACKER: This puts icon on top and text on bottom */
+.ico {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px; 
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.info-icon-themed {
+  font-size: 1.4rem;
+  color: var(--green-dark);
+}
+
+.nav-icon-link {
+  color: var(--text-dark) !important;
+  font-size: 0.7rem !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.ico:hover .info-icon-themed,
+.ico:hover .nav-icon-link {
+  color: var(--green-mid) !important;
+}
+
+/* ======================================================
+   PROFILE TRIGGER (No text)
+====================================================== */
+.profile-dropdown-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nav-profile-trigger {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.nav-profile-trigger .ico {
+  gap: 0; /* Remove gap since there's no text */
+}
+
+.nav-profile-trigger .info-icon-themed {
+  font-size: 1.8rem; /* Slightly larger since there is no text label */
+}
+
+.nav-user-avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #e8eddc;
+}
+
+/* ======================================================
+   POPOVER MENU
+====================================================== */
+.profile-popover {
+  position: absolute;
+  top: 55px;
+  right: 0;
+  width: 240px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border: 1px solid #eef0ee;
+  z-index: 1000;
+  padding: 10px 0;
+}
+
+.pop-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.pop-close-btn:hover {
+  color: var(--olive); /* Brand color on hover */
+  transform: scale(1.1);
+}
+
+.popover-header {
+  padding: 10px 20px;
+  border-bottom: 1px solid #f0f2f0;
+}
+
+.pop-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.pop-email {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+}
+
+.pop-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  color: var(--text-dark) !important;
+  font-size: 0.9rem;
+}
+
+.pop-item:hover {
+  background: #f4f6f1;
+  color: var(--green-dark) !important;
+}
+
+.pop-signout {
+  width: 100%;
+  padding: 12px 20px;
+  color: #d0021b !important;
+  font-weight: 700;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ======================================================
+   SEARCH BAR
+====================================================== */
+.search-container {
+  width: 100%;
+  background: #fdfdfd;
+  border-bottom: 1px solid #e8eddc;
+  padding: 12px 0px;
+  display: flex;
+  justify-content: center;
+}
+
+.search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+}
+
+.search_form {
+  width: 90%;
+  max-width: 500px;
+  height: 40px;
+  background: #f1f5e8;
+  border-radius: 50px;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #dbe6c6;
+}
+
+.search_form:focus-within {
+    background: #fff;
+    box-shadow: 0 4px 15px rgba(96, 110, 82, 0.15);
+    border-color: var(--olive);
+}
+
+.search_input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.85rem;
+  color: var(--text-dark);
+}
+
+.search_button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--green-dark);
+  align-items: center;
+  display: flex;
+}
+
+.search-suggestions {
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 20px; 
+    width: calc(100% - 40px);
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    list-style: none;
+    padding: 8px 0;
+    z-index: 1000;
+    border: 1px solid rgba(96, 110, 82, 0.1);
+    max-height: 300px;        
+    overflow-y: auto;          
+    overflow-x: hidden;       
+    
+    animation: fadeInDown 0.25s ease-out;
+}
+
+/* The Bubble Arrow */
+.search-suggestions::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 30px;
+    width: 12px;
+    height: 12px;
+    background: white;
+    transform: rotate(45deg);
+    border-left: 1px solid rgba(96, 110, 82, 0.1);
+    border-top: 1px solid rgba(96, 110, 82, 0.1);
+}
+
+.search-suggestions li {
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.95rem;
+    color: #444;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.search-suggestions li:hover {
+    background-color: rgba(96, 110, 82, 0.05);
+    color: var(--olive);
+}
+
+.suggestion-icon {
+    font-size: 0.85rem;
+    color: #a0a0a0;
+}
+
+.search-suggestions li:hover .suggestion-icon {
+    color: var(--olive);
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ======================================================
+   RESPONSIVE
+====================================================== */
+@media (max-width: 860px) {
+  .nav-icons-desktop {
+    gap: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand {
+    display: none;
+  }
+}

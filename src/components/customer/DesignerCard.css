@@ -1,0 +1,274 @@
+/* =========================================
+   PREMIUM DESIGNER CARD STYLES
+   ========================================= */
+
+.product-card {
+  background: var(--white);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(96, 110, 82, 0.08);
+  border-color: var(--green-mid);
+}
+
+/* Image Container with Luxury Overlay */
+.product-image-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #f8f8f6;
+  overflow: hidden;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.08);
+}
+
+/* Floating Glass Badges */
+.product-badge,
+.local-badge {
+  position: absolute;
+  top: 16px;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  z-index: 2;
+}
+
+.product-badge {
+  left: 16px;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--green-dark);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.local-badge {
+  right: 16px;
+  background: rgba(96, 110, 82, 0.9);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Info Section Content */
+.product-info {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background: linear-gradient(to bottom, #ffffff, #fafaf9);
+}
+
+.product-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.product-title {
+  color: var(--text-dark);
+  font-family: Big Caslon, Playfair Display, serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.product-rating-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #f1f1ee;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.rating-val {
+  font-weight: 800;
+  color: #2d2d2d;
+  font-size: 0.85rem;
+}
+
+.star-icon {
+  color: #fbbf24;
+  font-size: 0.75rem;
+}
+
+/* Typography Enhancements */
+.product-desc-text {
+  color: var(--text-muted);
+  font-size: .88rem;
+  
+  display: -webkit-box;
+  -webkit-line-clamp: 2;   
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  
+  margin-top: 8px;
+  margin-bottom: 16px;
+  height: 2.8rem;         
+  line-height: 1.4;          
+}
+
+.product-seller-group {
+  margin-top: auto;
+  padding-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.seller-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--green-dark);
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.1px;
+}
+
+.location-label {
+  font-size: 0.75rem;
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.product-footer-row {
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.price-tag {
+  font-size: 0.7rem;
+  font-weight: 850;
+  color: var(--green-mid);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  position: relative;
+}
+
+.price-tag::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background-color: var(--green-mid);
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.product-view-btn {
+  background: var(--green-dark);
+  color: var(--white);
+  border: none;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 4px 12px rgba(96, 110, 82, 0.15);
+}
+
+
+.product-view-btn:hover {
+  background: var(--green-mid);
+  box-shadow: 0 8px 20px rgba(96, 110, 82, 0.25);
+  transform: translateY(-2px);
+}
+
+/* HIGHLIGHT STATE FOR LOCAL DESIGNERS */
+.local-highlight {
+  border: 1px solid var(--green-mid);
+  background: #f9faf7;
+}
+
+/* =========================================
+   MOBILE LIST VIEW (REFLECTIVE OF YOUR CODE)
+   ========================================= */
+@media (max-width: 600px) {
+  .product-card {
+    flex-direction: row;
+    height: 180px;
+    border-radius: 16px;
+  }
+
+  .product-image-container {
+    width: 140px;
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .product-info {
+    padding: 16px;
+  }
+
+  .product-desc-text {
+    display: none;
+    /* Keep it clean on mobile */
+  }
+
+  .product-title {
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* Center the icon in the square container */
+.icon-fallback-container, .icon-fallback-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f2f0; /* Light brand grey/green */
+  color: #4a5a3f; /* Your brand dark green */
+  width: 100%;
+  height: 100%;
+}
+
+/* Size for the Card icon */
+.fallback-user-icon {
+  font-size: 3rem;
+}
+
+/* Size for the Profile Info page icon */
+.icon-fallback-profile svg {
+  font-size: 4rem;
+}
+
+/* Ensure the fallback container stays round on the info page */
+.designer-photo.icon-fallback-profile {
+  border-radius: 50%;
+  border: 2px solid #4a5a3f;
+}

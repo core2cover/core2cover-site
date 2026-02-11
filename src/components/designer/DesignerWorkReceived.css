@@ -1,0 +1,859 @@
+:root {
+  --cream-bg: #f5f3ed;
+  --text-dark: #474747;
+  --muted: #8f8b84;
+  --green-dark: #606e52;
+  --green-mid: #91a56e;
+  --green-light: #c0cca4;
+  --border: #ded9ce;
+  --white: #ffffff;
+  --radius: 20px;
+  --shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
+  font-family: "Helvetica", sans-serif;
+}
+
+/* ============================
+   NAVBAR (c2c-ddx-*)
+   ============================ */
+.c2c-ddx-navbar {
+  background: var(--white);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.c2c-ddx-nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.c2c-ddx-logo {
+  font-family: "Big Caslon", serif;
+  font-size: 1.4rem;
+  color: var(--green-dark);
+  margin: 0;
+}
+
+.c2c-ddx-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.c2c-ddx-nav-links {
+  list-style: none;
+  display: flex;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+}
+
+.c2c-ddx-seller-btn {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--green-mid);
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.c2c-ddx-hamburger {
+  display: none;
+  cursor: pointer;
+}
+
+/* small open helper */
+.c2c-open {
+  /* used on ul when open */
+}
+
+/* ============================
+   PAGE LAYOUT (c2c-dwrx-*)
+   ============================ */
+.c2c-dwrx-page {
+  background: var(--cream-bg);
+  min-height: 100vh;
+  padding: 50px 7vw;
+  font-family: "Helvetica", sans-serif;
+}
+
+/* header */
+.c2c-dwrx-header {
+  text-align: left;
+  margin-bottom: 40px;
+}
+
+.c2c-dwrx-title {
+  font-family: "Big Caslon", serif;
+  font-size: 2.8rem;
+  color: var(--green-dark);
+  margin-bottom: 10px;
+}
+
+.c2c-dwrx-sub {
+  color: var(--muted);
+  font-size: 1.1rem;
+  max-width: 560px;
+}
+
+/* job list */
+.c2c-dwrx-job-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* job card */
+.c2c-dwrx-job-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 28px;
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  animation: fadeUp 0.6s ease both;
+}
+
+/* left */
+.c2c-dwrx-card-left {
+  flex: 1;
+}
+
+.c2c-dwrx-client-name {
+  font-size: 1.4rem;
+  color: var(--green-dark);
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.c2c-dwrx-field {
+  margin-bottom: 14px;
+}
+
+.c2c-dwrx-field label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+.c2c-dwrx-field p {
+  font-size: 1.05rem;
+  color: var(--text-dark);
+  margin-top: 5px;
+}
+
+.c2c-dwrx-message {
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* right */
+.c2c-dwrx-card-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 210px;
+}
+
+/* status badge */
+.c2c-dwrx-status {
+  padding: 8px 46px;
+  border-radius: 14px;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+/* map statuses to original colors */
+.c2c-dwrx-status.pending {
+  background: var(--green-light);
+  color: var(--green-dark);
+}
+
+.c2c-dwrx-status.accepted {
+  background: #ffe8b5;
+  color: #8a6b00;
+}
+
+.c2c-dwrx-status.completed {
+  background: #d5f5d1;
+  color: #235d1e;
+}
+
+.c2c-dwrx-status.rejected {
+  background: #f7c5c5;
+  color: #8a2e2e;
+}
+
+/* buttons container */
+.c2c-dwrx-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* generic button */
+.c2c-dwrx-btn {
+  padding: 12px 18px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  margin-right: 5px;
+}
+
+/* modifiers */
+.c2c-dwrx-btn.c2c-dwrx-accept {
+  background: var(--green-mid);
+  color: white;
+}
+
+.c2c-dwrx-btn.c2c-dwrx-accept:hover {
+  background: var(--green-dark);
+}
+
+.c2c-dwrx-btn.c2c-dwrx-decline {
+  background: #f2d3d3;
+  color: #8a2e2e;
+}
+
+.c2c-dwrx-btn.c2c-dwrx-complete {
+  background: #a8d8a8;
+  color: #234d23;
+}
+
+.c2c-dwrx-btn.c2c-dwrx-secondary {
+  background: #f3f4f6;
+  color: var(--text-dark);
+}
+
+/* client info */
+.c2c-dwrx-client-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.c2c-dwrx-client-icon {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(16, 185, 129, 0.12);
+  color: #234d23;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.18);
+}
+
+.c2c-dwrx-client-value {
+  font-weight: 700;
+  color: var(--text-dark);
+  font-size: 1rem;
+}
+
+/* stars */
+.c2c-dwrx-star {
+  color: #e6eef2;
+  font-size: 18px;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.c2c-dwrx-star-filled {
+  color: #f59e0b;
+  filter: drop-shadow(0 3px 8px rgba(16, 185, 129, 0.15));
+}
+
+.c2c-dwrx-star-empty {
+  color: #cbd5e1;
+}
+
+/* given rating */
+.c2c-dwrx-given-rating {
+  margin-top: 12px;
+  border-top: 1px solid rgba(15, 23, 42, 0.04);
+  padding-top: 10px;
+  width: 100%;
+  text-align: right;
+}
+
+.c2c-dwrx-given-review {
+  margin-top: 6px;
+  color: #0f172a;
+  font-style: italic;
+}
+
+/* modal */
+.c2c-dwrx-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.c2c-dwrx-modal-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 640px;
+  box-shadow: 0 20px 40px rgba(2, 6, 23, 0.3);
+}
+
+/* star rating button */
+.c2c-dwrx-star-btn:focus {
+  outline: none;
+}
+
+/* tiny active helper (only used on star buttons) */
+.c2c-active {
+  opacity: 0.95;
+  transform: scale(1.02);
+}
+
+/* ============================
+   animation helpers (unique)
+   ============================ */
+.c2c-anim-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: c2cFade 0.6s ease forwards;
+}
+
+.c2c-anim-delay-1 {
+  animation-delay: 0.08s;
+}
+
+@keyframes c2cFade {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* original fadeUp keyframe kept for compatibility */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* responsive */
+@media (max-width: 1024px) {
+  .c2c-dwrx-page {
+    padding: 40px 5vw;
+  }
+
+  .c2c-dwrx-title {
+    font-size: 2.3rem;
+  }
+
+  .c2c-dwrx-job-card {
+    gap: 24px;
+    padding: 24px;
+  }
+
+  .c2c-dwrx-client-name {
+    font-size: 1.25rem;
+  }
+
+  .c2c-dwrx-card-right {
+    min-width: 220px;
+  }
+
+  .c2c-dwrx-status {
+    padding: 8px 34px;
+  }
+}
+
+@media (max-width: 768px) {
+  .c2c-dwrx-page {
+    padding: 32px 5vw;
+  }
+
+  .c2c-dwrx-header {
+    margin-bottom: 28px;
+  }
+
+  .c2c-dwrx-title {
+    font-size: 2rem;
+  }
+
+  .c2c-dwrx-sub {
+    font-size: 1rem;
+  }
+
+  .c2c-dwrx-job-card {
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .c2c-dwrx-card-right {
+    text-align: left;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .c2c-dwrx-status {
+    align-self: flex-start;
+    padding: 6px 20px;
+    font-size: 0.8rem;
+  }
+
+  .c2c-dwrx-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .c2c-dwrx-btn {
+    flex: 1;
+    min-width: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .c2c-dwrx-page {
+    padding: 24px 4vw;
+  }
+
+  .c2c-dwrx-title {
+    font-size: 1.75rem;
+  }
+
+  .c2c-dwrx-sub {
+    font-size: 0.95rem;
+  }
+
+  .c2c-dwrx-job-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .c2c-dwrx-client-name {
+    font-size: 1.15rem;
+    gap: 8px;
+  }
+
+  .c2c-dwrx-field p {
+    font-size: 0.95rem;
+  }
+
+  .c2c-dwrx-field label {
+    font-size: 0.7rem;
+  }
+
+  .c2c-dwrx-message {
+    font-size: 0.9rem;
+  }
+
+  .c2c-dwrx-client-info {
+    gap: 8px;
+  }
+
+  .c2c-dwrx-client-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
+  }
+
+  .c2c-dwrx-client-value {
+    font-size: 0.95rem;
+  }
+
+  .c2c-dwrx-card-right {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .c2c-dwrx-status {
+    width: fit-content;
+    font-size: 0.75rem;
+  }
+
+  .c2c-dwrx-buttons {
+    flex-direction: column;
+  }
+
+  .c2c-dwrx-btn {
+    width: 100%;
+    padding: 11px;
+    font-size: 0.95rem;
+  }
+
+  .c2c-dwrx-modal-box {
+    padding: 16px;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .c2c-dwrx-title {
+    font-size: 1.6rem;
+  }
+
+  .c2c-dwrx-btn {
+    font-size: 0.9rem;
+  }
+
+  .c2c-dwrx-client-value {
+    font-size: 0.9rem;
+  }
+}
+
+/* Reputation Badge */
+.c2c-dwrx-badge-reputation {
+  background: var(--green-light);
+  color: var(--green-dark);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-left: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Modal Styling Improvements */
+.c2c-dwrx-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.c2c-dwrx-modal-box {
+  background: white;
+  padding: 30px;
+  border-radius: var(--radius-lg);
+  width: 90%;
+  max-width: 500px;
+  box-shadow: var(--shadow-hover);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* ============================
+   REVIEWS & RATINGS (NEW)
+   ============================ */
+
+/* The mini cards inside the "Client Reputation" Modal */
+.reviews-scroll-area {
+  margin: 20px 0;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Custom Scrollbar for the review area */
+.reviews-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.reviews-scroll-area::-webkit-scrollbar-thumb {
+  background: var(--green-light);
+  border-radius: 10px;
+}
+
+.review-card-mini {
+  background: #fdfdfb;
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: 14px;
+  transition: transform 0.2s ease;
+}
+
+.review-card-mini:hover {
+  border-color: var(--green-mid);
+  transform: translateY(-2px);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.review-header strong {
+  color: #f59e0b;
+  /* Gold for stars */
+  font-size: 1.1rem;
+  background: rgba(245, 158, 11, 0.1);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.review-header span {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.review-card-mini p {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  line-height: 1.5;
+  font-style: italic;
+  margin: 8px 0;
+}
+
+.review-card-mini small {
+  display: block;
+  text-align: right;
+  font-weight: 700;
+  color: var(--green-dark);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================
+   STAR RATING INPUT (Form)
+   ============================ */
+.star-rating-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 25px 0;
+}
+
+.star-rating-row svg {
+  font-size: 2.2rem;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.star-rating-row svg:hover {
+  transform: scale(1.2);
+}
+
+.star-active {
+  color: #f59e0b;
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.3));
+}
+
+.star-inactive {
+  color: #e2e8f0;
+}
+
+/* Textarea for the Rating Form */
+.c2c-dwrx-modal-box textarea {
+  width: 94%;
+  min-height: 120px;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #f9fafb;
+  font-family: inherit;
+  font-size: 1rem;
+  resize: none;
+  margin-bottom: 20px;
+  transition: border-color 0.3s ease;
+}
+
+.c2c-dwrx-modal-box textarea:focus {
+  outline: none;
+  border-color: var(--green-mid);
+  background: var(--white);
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 12px;
+  align-items: end;
+}
+
+.cancel-btn {
+  background: #f3f4f6;
+  color: var(--text-dark);
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  height: 48px;
+}
+
+.full-width {
+  width: 100%;
+  background: var(--green-dark);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* Modal Header Refinement */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 15px;
+}
+
+.modal-header h2 {
+  font-family: "Big Caslon", serif;
+  font-size: 1.6rem;
+  color: var(--green-dark);
+  margin: 0;
+}
+
+.close-x {
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dark);
+}
+
+/* =========================================
+   SUBMIT RATING BUTTON STYLING
+========================================= */
+
+.c2c-dwrx-complete {
+  /* Layout & Sizing */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  /* Full width for mobile-first accessibility */
+  max-width: 200px;
+  /* Constraints size on desktop */
+  padding: 14px 24px;
+  margin-top: 15px;
+
+  /* Typography */
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+
+  /* Colors & Theme */
+  color: #ffffff;
+  background: linear-gradient(135deg, #91a56e, #606e52);
+  /* Project theme colors */
+  border: none;
+  border-radius: 12px;
+
+  /* Interaction & Performance */
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(96, 110, 82, 0.25);
+  outline: none;
+}
+
+/* Hover & Active States */
+.c2c-dwrx-complete:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 6px 20px rgba(96, 110, 82, 0.35);
+}
+
+.c2c-dwrx-complete:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Loading & Disabled States */
+.c2c-dwrx-complete:disabled {
+  background: #d1d9c5;
+  /* Muted sage for disabled state */
+  color: #8f8b84;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.de-navigation-top {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.de-back-btn {
+  border: 1px solid var(--border-soft);
+  color: var(--green-dark);
+  cursor: pointer;
+  /* z-index: 1000; */
+  background: none;
+  border-radius: 10px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all .3s;
+  display: flex;
+  /* position: fixed;
+}
+
+.de-back-btn:hover {
+  background: var(--green-light);
+  border-color: var(--green-mid);
+  transform: translateX(-5px); /* Subtle nudge to the left */
+}
+
+.de-back-btn svg {
+  font-size: 16px;
+}
+
+/* Ensure responsiveness for mobile */
+@media (max-width: 768px) {
+  .de-navigation-top {
+    padding: 0 15px;
+    margin-bottom: 15px;
+  }
+
+  .de-back-btn {
+    /* width: 100%;  */
+    justify-content: center;
+  }
+}
