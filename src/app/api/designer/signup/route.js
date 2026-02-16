@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import nodemailer from "nodemailer"; //
+import nodemailer from "nodemailer";
+import { validatePasswordStrength } from "@/utils/passwordValidation";
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -17,6 +18,18 @@ export async function POST(request) {
   try {
     const { fullname, email, mobile, location, password } = await request.json();
     const emailNormalized = email.trim().toLowerCase();
+
+    // Validate password strength
+    const passwordValidation = validatePasswordStrength(password);
+    if (!passwordValidation.valid) {
+      return NextResponse.json(
+        { 
+          message: "Password does not meet requirements", 
+          errors: passwordValidation.errors 
+        },
+        { status: 400 }
+      );
+    }
 
     // 1. Check for Conflicts
     const existingDesigner = await prisma.designer.findFirst({

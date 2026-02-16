@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
+import { otpRateLimiter } from "@/utils/rateLimiter";
 
 // Helper for hashing
 const hashOtp = (otp) => crypto.createHash("sha256").update(otp).digest("hex");
@@ -19,6 +20,16 @@ const transporter = nodemailer.createTransport({
 
 export async function POST(request) {
   try {
+    // Apply rate limiting
+    try {
+      otpRateLimiter(request);
+    } catch (rateLimitError) {
+      return NextResponse.json(
+        { message: rateLimitError.message },
+        { status: 429 }
+      );
+    }
+
     const { email } = await request.json();
 
     if (!email) {

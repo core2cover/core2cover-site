@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { loginRateLimiter } from "@/utils/rateLimiter";
 
 /**
  * EASY ENCRYPTION HELPER
@@ -14,6 +15,16 @@ const encodeData = (data) => {
 
 export async function POST(request) {
   try {
+    // Apply rate limiting
+    try {
+      loginRateLimiter(request);
+    } catch (rateLimitError) {
+      return NextResponse.json(
+        { message: rateLimitError.message },
+        { status: 429 }
+      );
+    }
+
     const { email, password } = await request.json();
 
     const user = await prisma.user.findUnique({ 

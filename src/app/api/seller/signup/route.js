@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import nodemailer from "nodemailer"; 
+import nodemailer from "nodemailer";
+import { validatePasswordStrength } from "@/utils/passwordValidation";
 
 
 const transporter = nodemailer.createTransport({
@@ -21,6 +22,18 @@ export async function POST(request) {
 
     if (!name || !email || !phone || !password) {
       return NextResponse.json({ message: "All fields required" }, { status: 400 });
+    }
+
+    // Validate password strength
+    const passwordValidation = validatePasswordStrength(password);
+    if (!passwordValidation.valid) {
+      return NextResponse.json(
+        { 
+          message: "Password does not meet requirements", 
+          errors: passwordValidation.errors 
+        },
+        { status: 400 }
+      );
     }
 
     const emailNormalized = email.trim().toLowerCase();

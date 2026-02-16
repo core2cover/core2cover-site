@@ -8,22 +8,24 @@ datasource db {
 }
 
 model User {
-  id             Int                   @id @default(autoincrement())
-  name           String?
-  email          String?               @unique
-  emailVerified  DateTime?
-  image          String?
-  password       String?
-  phone          String?
-  address        String?
-  createdAt      DateTime              @default(now())
-  credit         Float                 @default(0)
-  accounts       Account[]
-  hireRequests   DesignerHireRequest[]
-  orders         Order[]
-  ratings        Rating[]
-  returnRequests ReturnRequest[]
-  sessions       Session[]
+  id                Int                   @id @default(autoincrement())
+  name              String?
+  email             String?               @unique
+  emailVerified     DateTime?
+  image             String?
+  password          String?
+  phone             String?
+  address           String?
+  createdAt         DateTime              @default(now())
+  credit            Float                 @default(0)
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  accounts          Account[]
+  hireRequests      DesignerHireRequest[]
+  orders            Order[]
+  ratings           Rating[]
+  returnRequests    ReturnRequest[]
+  sessions          Session[]
 }
 
 model Account {
@@ -67,19 +69,21 @@ model CustomerOtp {
 /// SELLER (ACCOUNT)
 /// =========================
 model Seller {
-  id            Int                    @id @default(autoincrement())
-  name          String
-  email         String                 @unique
-  phone         String
-  password      String
-  phoneVerified Boolean                @default(false)
-  isVerified    Boolean                @default(false)
-  createdAt     DateTime               @default(now())
-  orderItems    OrderItem[]
-  products      Product[]
-  bank          SellerBankDetails?
-  business      SellerBusinessDetails?
-  delivery      SellerDeliveryDetails?
+  id                Int                    @id @default(autoincrement())
+  name              String
+  email             String                 @unique
+  phone             String
+  password          String
+  phoneVerified     Boolean                @default(false)
+  isVerified        Boolean                @default(false)
+  createdAt         DateTime               @default(now())
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  orderItems        OrderItem[]
+  products          Product[]
+  bank              SellerBankDetails?
+  business          SellerBusinessDetails?
+  delivery          SellerDeliveryDetails?
 }
 
 /// SELLER OTP
@@ -243,21 +247,23 @@ model Rating {
 }
 
 model Designer {
-  id           Int                   @id @default(autoincrement())
-  fullname     String
-  email        String                @unique
-  mobile       String                @unique
-  location     String?
-  passwordHash String
-  availability String                @default("Available")
-  isVerified   Boolean               @default(false)
-  createdAt    DateTime              @default(now())
-  updatedAt    DateTime              @updatedAt
-  hireRequests DesignerHireRequest[]
-  profile      DesignerProfile?
-  ratings      DesignerRating[]
-  works        DesignerWork[]
-  userRatings  UserRating[]
+  id                Int                   @id @default(autoincrement())
+  fullname          String
+  email             String                @unique
+  mobile            String                @unique
+  location          String?
+  passwordHash      String
+  availability      String                @default("Available")
+  isVerified        Boolean               @default(false)
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  hireRequests      DesignerHireRequest[]
+  profile           DesignerProfile?
+  ratings           DesignerRating[]
+  works             DesignerWork[]
+  userRatings       UserRating[]
 }
 
 model DesignerOtp {

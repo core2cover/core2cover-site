@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
+import { validatePasswordStrength } from "@/utils/passwordValidation";
 
 export async function POST(request) {
   try {
@@ -9,6 +10,18 @@ export async function POST(request) {
 
     if (!name || !email || !password) {
       return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
+    }
+
+    // Validate password strength
+    const passwordValidation = validatePasswordStrength(password);
+    if (!passwordValidation.valid) {
+      return NextResponse.json(
+        { 
+          message: "Password does not meet requirements", 
+          errors: passwordValidation.errors 
+        },
+        { status: 400 }
+      );
     }
 
     const emailNormalized = email.trim().toLowerCase();
