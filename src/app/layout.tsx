@@ -49,14 +49,14 @@ export default function RootLayout({
     "@type": "WebSite",
     "name": "Core2Cover",
     "alternateName": ["C2C", "Core 2 Cover"],
-    "url": "https://core2cover.vercel.app"
+    "url": "https://core2cover.in"
     },
     {
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "Core2Cover",
-      "url": "https://core2cover.vercel.app",
-      "logo": "https://core2cover.vercel.app/icon.png",
+      "url": "https://core2cover.in",
+      "logo": "https://core2cover.in/icon.png",
       "contactPoint": {
         "@type": "ContactPoint",
         "telephone": "+91-8275922422",
