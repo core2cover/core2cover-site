@@ -96,7 +96,7 @@ git diff main         # If you're on a different branch
 ## Visual Confirmation
 
 After pushing, you can visually confirm on GitHub:
-1. Go to https://github.com/core2cover/core2cover-site
+1. Go to your repository on GitHub (check `git remote -v` for the URL)
 2. Check the "Commits" tab
 3. Look for your branch in "Branches"
 4. View your Pull Request (if created)
