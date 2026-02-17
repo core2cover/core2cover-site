@@ -215,6 +215,10 @@
     height: 100%;
   }
 
+  .product-image {
+    object-fit: contain;
+  }
+
   .product-info {
     padding: 12px;
     justify-content: space-between;
