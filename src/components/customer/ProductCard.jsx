@@ -34,6 +34,22 @@ const ProductCard = ({
 }) => {
   const router = useRouter();
   const [msg, setMsg] = useState({ text: "", type: "success", show: false });
+  const formatTitle = (text) => {
+    if (!text) return "";
+    const words = text.split(" ");
+    if (words.length <= 3) return text;
+    return words.slice(0, 3).join(" ") + "...";
+  };
+
+  // To handle responsiveness in JS (Optional but cleaner for your specific request)
+  const [isMobile, setIsMobile] = useState(false);
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 600);
+    handleResize(); // Set initial
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const getValidSrc = () => {
     if (images && images.length > 0 && images[0]) {
@@ -48,10 +64,10 @@ const ProductCard = ({
   const resolvedSellerName = typeof seller === 'string' ? seller : seller?.name || "Verified Seller";
 
   const handleAddToCart = (e) => {
-    e.stopPropagation(); 
+    e.stopPropagation();
     if (availability === "out_of_stock") {
-        setMsg({ text: "Sorry, this item is out of stock.", type: "error", show: true });
-        return;
+      setMsg({ text: "Sorry, this item is out of stock.", type: "error", show: true });
+      return;
     }
 
     try {
@@ -110,20 +126,22 @@ const ProductCard = ({
             unoptimized={true}
           />
           <span className="product-badge">{category}</span>
-          
+
           {/* Availability Badge */}
           <span className={`stock-badge ${availability}`}>
-             {availability.replace('_', ' ')}
+            {availability.replace('_', ' ')}
           </span>
-          
+
           {availability === 'out_of_stock' && (
-             <div className="oos-overlay">SOLD OUT</div>
+            <div className="oos-overlay">SOLD OUT</div>
           )}
         </div>
 
         <div className="product-info">
           <div className="product-top-row">
-            <h3 className="product-title">{title}</h3>
+            <h3 className="product-title">
+              {isMobile ? formatTitle(title) : title}
+            </h3>
             <div className="product-rating-badge">
               <FaStar className="star-icon" />
               <span className="rating-val">{Number(avgRating || 0).toFixed(1)}</span>
@@ -153,7 +171,7 @@ const ProductCard = ({
               onClick={handleAddToCart}
               disabled={availability === "out_of_stock"}
             >
-              <FaShoppingCart style={{ marginRight: "8px" }} /> 
+              <FaShoppingCart style={{ marginRight: "8px" }} />
               {availability === "out_of_stock" ? "Sold Out" : "Add to Cart"}
             </button>
           </div>

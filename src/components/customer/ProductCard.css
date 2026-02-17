@@ -229,19 +229,15 @@
 
   .product-title {
     font-size: 0.95rem;
-    white-space: normal; 
-    overflow-wrap: break-word; 
-    word-wrap: break-word;
-    word-break: break-word;
-    max-width: 100%; 
     line-height: 1.2;
-    margin-bottom: 4px;
+    display: block; /* Ensures the name sits on its own line */
+    word-break: break-word;
+    margin-bottom: 2px;
   }
 
   .product-top-row {
-    flex-direction: column; /* Optional: stack rating below title if name is very long */
+    flex-direction: column; /* Stacks the rating below the 3-word title */
     align-items: flex-start;
-    gap: 4px;
   }
 
   .product-footer {
