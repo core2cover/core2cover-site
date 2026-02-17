@@ -1,5 +1,20 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## 📝 Change Tracking & Version Control
+
+**Yes, all changes you make in this repository ARE tracked!** This repository uses Git for version control, which means every modification is recorded and can be reviewed.
+
+📚 **Quick Guides:**
+- [GIT_QUICK_REFERENCE.md](./GIT_QUICK_REFERENCE.md) - Essential Git commands to track your changes
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - Complete guide on how to contribute and track changes
+
+### Quick Check Your Changes
+```bash
+git status          # See what you've modified
+git log --oneline   # View your commit history
+git diff           # See exact changes you made
+```
+
 ## Getting Started
 
 First, run the development server:
