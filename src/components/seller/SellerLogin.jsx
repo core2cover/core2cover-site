@@ -14,6 +14,7 @@ const SellerLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -42,6 +43,31 @@ const SellerLogin = () => {
     }
   };
 
+  /**
+   * Retrieves scrambled data from Local Storage.
+   */
+  const secureGetItem = (key) => {
+    try {
+      const encodedValue = localStorage.getItem(key);
+      if (!encodedValue) return null;
+      return atob(encodedValue);
+    } catch (e) {
+      console.error("Failed to retrieve item:", e);
+      return null;
+    }
+  };
+
+  /* =========================================
+      LOAD REMEMBERED EMAIL
+  ========================================= */
+  React.useEffect(() => {
+    const rememberedEmail = secureGetItem("rememberedSellerEmail");
+    if (rememberedEmail) {
+      setEmail(rememberedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
@@ -54,10 +80,18 @@ const SellerLogin = () => {
     try {
       const response = await sellerLogin({ 
         email: email.toLowerCase().trim(), 
-        password 
+        password,
+        rememberMe
       });
       
       const data = response?.data ?? response;
+
+      // Handle Remember Me functionality
+      if (rememberMe) {
+        secureSetItem("rememberedSellerEmail", email.toLowerCase().trim());
+      } else {
+        localStorage.removeItem("rememberedSellerEmail");
+      }
 
       // Handle the encrypted payload from the backend
       if (data?.payload) {
@@ -132,6 +166,19 @@ const SellerLogin = () => {
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
+            </div>
+
+            <div className="input-groups" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+              <input
+                type="checkbox"
+                id="rememberMeSeller"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                style={{ width: 'auto', margin: 0 }}
+              />
+              <label htmlFor="rememberMeSeller" style={{ margin: 0, cursor: 'pointer' }}>
+                Remember me
+              </label>
             </div>
 
             <p className="signup-text">

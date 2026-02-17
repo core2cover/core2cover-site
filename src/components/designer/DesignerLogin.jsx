@@ -14,6 +14,7 @@ const DesignerLogin = () => {
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -42,6 +43,32 @@ const DesignerLogin = () => {
     }
   };
 
+  /**
+   * Retrieves scrambled data from Local Storage.
+   */
+  const secureGetItem = (key) => {
+    try {
+      const encodedValue = localStorage.getItem(key);
+      if (!encodedValue) return null;
+      return atob(encodedValue);
+    } catch (e) {
+      console.error("Failed to retrieve item:", e);
+      return null;
+    }
+  };
+
+  /* =========================================
+      LOAD REMEMBERED EMAIL
+  ========================================= */
+  React.useEffect(() => {
+    const rememberedEmail = secureGetItem("rememberedDesignerEmail");
+    if (rememberedEmail) {
+      setForm({ ...form, email: rememberedEmail });
+      setRememberMe(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -55,9 +82,17 @@ const DesignerLogin = () => {
       const res = await designerLogin({
         email: form.email.trim().toLowerCase(),
         password: form.password,
+        rememberMe,
       });
 
       const data = res.data;
+
+      // Handle Remember Me functionality
+      if (rememberMe) {
+        secureSetItem("rememberedDesignerEmail", form.email.trim().toLowerCase());
+      } else {
+        localStorage.removeItem("rememberedDesignerEmail");
+      }
 
       // Handle the encrypted payload from the backend
       if (data?.payload) {
@@ -129,6 +164,19 @@ const DesignerLogin = () => {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
+          </div>
+
+          <div className="login-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+            <input
+              type="checkbox"
+              id="rememberMeDesigner"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              style={{ width: 'auto', margin: 0 }}
+            />
+            <label htmlFor="rememberMeDesigner" style={{ margin: 0, cursor: 'pointer' }}>
+              Remember me
+            </label>
           </div>
 
           <button className="login-btn" type="submit" disabled={loading}>

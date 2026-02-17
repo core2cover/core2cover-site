@@ -18,6 +18,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter(); 
@@ -47,6 +48,31 @@ export default function Login() {
       return null;
     }
   };
+
+  /**
+   * Retrieves scrambled data from Local Storage.
+   */
+  const secureGetItem = (key) => {
+    try {
+      const encodedValue = localStorage.getItem(key);
+      if (!encodedValue) return null;
+      return atob(encodedValue);
+    } catch (e) {
+      console.error("Failed to retrieve item:", e);
+      return null;
+    }
+  };
+
+  /* =========================================
+      LOAD REMEMBERED EMAIL
+  ========================================= */
+  useEffect(() => {
+    const rememberedEmail = secureGetItem("rememberedEmail");
+    if (rememberedEmail) {
+      setEmail(rememberedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   /* =========================================
       SESSION SYNC & REDIRECT
@@ -83,8 +109,19 @@ export default function Login() {
     setLoading(true);
     try {
       // Call the backend login route
-      const response = await customerLogin({ email: email.trim(), password });
+      const response = await customerLogin({ 
+        email: email.trim(), 
+        password,
+        rememberMe 
+      });
       const data = response?.data ?? response;
+
+      // Handle Remember Me functionality
+      if (rememberMe) {
+        secureSetItem("rememberedEmail", email.trim());
+      } else {
+        localStorage.removeItem("rememberedEmail");
+      }
 
       // Save the JWT token normally for the interceptor to use
       if (data?.token) {
@@ -164,6 +201,19 @@ export default function Login() {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
+          </div>
+
+          <div className="input-group" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+            <input
+              type="checkbox"
+              id="rememberMe"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              style={{ width: 'auto', margin: 0 }}
+            />
+            <label htmlFor="rememberMe" style={{ margin: 0, cursor: 'pointer' }}>
+              Remember me
+            </label>
           </div>
 
           <button type="submit" className="login-btn" disabled={loading}>
