@@ -185,7 +185,7 @@ const SellerAddProduct = () => {
     <>
       {submitting && <LoadingSpinner message="Uploading product files..." />}
 
-      <div className="sma-root">
+      <div className="ms-root">
         {msg.show && (
           <MessageBox
             message={msg.text}

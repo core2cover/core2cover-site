@@ -1,348 +1,311 @@
 /* =========================================
-   CASA THEME VARIABLES
+   CASA – Premium Interior Theme
+   Target: Seller Add Product
+   Prefixes: ms- / sma-
 ========================================= */
+
 :root {
-  --green-dark: #606E52;
-  --green-mid: #91A56E;
-  --green-light: #C0CCA4;
-  --bg: linear-gradient(180deg, #f4f7ef, #e8efdc);
+  /* Sidebar Width from your existing config */
+  --ms-sidebar-w: 220px;
+
+  /* Refined Color Palette */
+  --green-dark: #4F5E44;
+  --green-mid: #6B7C5C;
+  --green-light: #91A56E;
+  --sage-bg: #F4F6F1;
 
   --white: #ffffff;
-  --bg-soft: #F3F7EC;
+  --border-subtle: rgba(79, 94, 68, 0.12);
 
-  --text-dark: #474747;
-  --text-muted: #8F8B84;
+  --text-main: #2F332B;
+  --text-soft: #7A7F75;
 
-  --radius: 14px;
-  --border: rgba(96,110,82,0.25);
-  --shadow: 0 16px 42px rgba(96,110,82,0.18);
-  --ease: 220ms cubic-bezier(.2,.9,.3,1);
+  --radius-lg: 20px;
+  --radius-md: 12px;
 
-  --font-ui: "Helvetica", Arial, sans-serif;
+  --shadow-sm: 0 4px 12px rgba(79, 94, 68, 0.05);
+  --shadow-lg: 0 20px 40px rgba(79, 94, 68, 0.12);
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --font-ui: "Inter", "Helvetica", Arial, sans-serif;
   --font-heading: "Playfair Display", serif;
 }
 
-/* =========================================
-   ROOT LAYOUT
-========================================= */
-.sma-root {
+/* ===============================
+   ROOT & LAYOUT
+================================ */
+.ms-root {
   min-height: 100vh;
   display: flex;
-  background: var(--bg);
+  background-color: var(--sage-bg);
+  /* Elegant background texture */
+  background-image:
+    radial-gradient(at 0% 0%, rgba(145, 165, 110, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(96, 110, 82, 0.08) 0px, transparent 50%);
   font-family: var(--font-ui);
 }
 
-/* MAIN CONTENT */
 .sma-main {
   flex: 1;
-  padding: 90px 6vw 40px;
+  padding: 80px 24px 60px;
   display: flex;
   justify-content: center;
+  box-sizing: border-box;
 }
 
-/* =========================================
-   CARD
-========================================= */
+/* ===============================
+   THE CARD
+================================ */
 .sma-card {
   width: 100%;
-  max-width: 860px;
+  max-width: 900px;
   background: var(--white);
-  padding: 32px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  animation: fadeUp 0.5s ease forwards;
-  margin-left: 220px;
+  padding: 40px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--white);
+  animation: fadeSlide 0.6s var(--ease) forwards;
+  margin: 0 auto;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
 }
 
-/* TITLE */
+/* Accent bar at the top of the card */
+.sma-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, var(--green-dark), var(--green-light));
+}
+
 .sma-title {
   font-family: var(--font-heading);
-  font-size: 1.9rem;
-  font-weight: 500;
+  font-size: 2rem;
+  font-weight: 600;
   color: var(--green-dark);
-  margin-bottom: 24px;
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-/* =========================================
-   GRID
-========================================= */
+/* ===============================
+   FORM GRID & FIELDS
+================================ */
 .sma-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 18px 20px;
+  gap: 24px 30px;
 }
 
 .sma-full {
   grid-column: 1 / -1;
 }
 
-/* =========================================
-   FIELDS
-========================================= */
 .sma-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
-.sma-label {
-  font-weight: 700;
+.sma-field span {
+  font-weight: 600;
   font-size: 0.9rem;
-  color: var(--text-dark);
+  color: var(--text-main);
 }
 
-/* INPUTS */
+/* ===============================
+   INPUT STYLING
+================================ */
 .sma-input,
 .sma-textarea,
-.sma-file {
-  padding: 11px 12px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: #f9faf7;
+.sma-file,
+select.sma-input {
+  padding: 13px 16px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-subtle);
+  background: #FBFCF9;
   font-size: 0.95rem;
+  color: var(--text-main);
   outline: none;
-  transition: border-color var(--ease), box-shadow var(--ease);
+  transition: all 0.25s var(--ease);
+  box-shadow: var(--shadow-sm);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sma-input:hover,
+.sma-textarea:hover {
+  border-color: var(--green-light);
 }
 
 .sma-input:focus,
 .sma-textarea:focus {
+  background: var(--white);
   border-color: var(--green-mid);
-  box-shadow: 0 0 0 3px rgba(96,110,82,0.22);
+  box-shadow: 0 0 0 4px rgba(107, 124, 92, 0.1);
 }
 
-.sma-input:disabled {
-  background: #eef2e6;
-  cursor: not-allowed;
+.sma-input.sma-readonly {
+  background-color: #F1F3EE;
+  color: var(--green-dark);
+  font-weight: 700;
+  border: 1.5px dashed var(--border-subtle);
 }
 
-/* TEXTAREA */
 .sma-textarea {
-  min-height: 90px;
+  min-height: 120px;
   resize: vertical;
 }
 
-/* FILE INPUT */
+/* ===============================
+   MEDIA UPLOADS & PREVIEWS
+================================ */
 .sma-file {
   background: var(--white);
+  border: 2px dashed var(--border-subtle);
+  padding: 15px;
   cursor: pointer;
 }
 
-/* =========================================
-   IMAGE PREVIEW GRID
-========================================= */
 .sma-preview-grid {
-  margin-top: 12px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 12px;
+  margin-top: 15px;
 }
 
 .sma-preview {
   width: 100%;
-  height: 120px;
+  height: 100px;
   object-fit: cover;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-  background: #f1f4ea;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  transition: transform 0.2s ease;
 }
 
-/* VIDEO PREVIEW */
+.sma-preview:hover {
+  transform: scale(1.03);
+}
+
 video.sma-preview {
-  height: 200px;
+  height: auto;
+  max-height: 250px;
 }
 
-/* =========================================
-   ACTIONS
-========================================= */
+/* ===============================
+   BUTTONS
+================================ */
 .sma-actions {
-  margin-top: 26px;
+  margin-top: 35px;
   display: flex;
   justify-content: flex-end;
 }
 
 .sma-btn {
-  padding: 12px 20px;
-  border-radius: var(--radius);
+  padding: 15px 35px;
+  border-radius: var(--radius-md);
   border: none;
-  font-weight: 800;
+  font-weight: 700;
+  font-size: 1rem;
   cursor: pointer;
-  transition: transform var(--ease), box-shadow var(--ease);
+  transition: all 0.3s var(--ease);
 }
 
-/* PRIMARY */
 .sma-btn--primary {
-  background: linear-gradient(90deg, var(--green-dark), var(--green-mid));
+  background: var(--green-dark);
   color: var(--white);
+  box-shadow: 0 8px 20px rgba(79, 94, 68, 0.2);
 }
 
 .sma-btn--primary:hover:not(:disabled) {
+  background: var(--green-mid);
   transform: translateY(-2px);
-  box-shadow: 0 16px 36px rgba(96,110,82,0.28);
+  box-shadow: 0 12px 25px rgba(79, 94, 68, 0.25);
 }
 
 .sma-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  filter: grayscale(0.5);
 }
 
-/* =========================================
-   ANIMATION
-========================================= */
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* ===============================
+   RESPONSIVE LOGIC
+================================ */
 
-/* =========================================
-   RESPONSIVE
-========================================= */
-@media (max-width: 900px) {
+/* Desktop: Offset for Fixed Sidebar */
+@media screen and (min-width: 619px) {
   .sma-main {
-    padding: 80px 4vw 30px;
+    /* Respects your 220px fixed sidebar width */
+    padding-left: calc(var(--ms-sidebar-w) + 40px);
+    padding-right: 40px;
   }
 }
 
-@media (max-width: 680px) {
-  .sma-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .sma-title {
-    font-size: 1.6rem;
-  }
-
-  .sma-preview {
-    height: 100px;
-  }
-
-  video.sma-preview {
-    height: 180px;
+/* Tablet Layout */
+@media screen and (max-width: 1024px) {
+  .sma-card {
+    padding: 30px;
   }
 }
 
-/* When image container is fullscreen */
-.pd-image-box:fullscreen {
-  width: 100vw;
-  height: 100vh;
-  padding: 0;
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Image must fit viewport */
-.pd-image-box:fullscreen .pd-image {
-  max-width: 100vw;
-  max-height: 100vh;
-  width: auto;
-  height: auto;
-  object-fit: contain; /* 🔥 KEY */
-}
-
-/* Prevent overflow caused by inherited styles */
-.pd-image-box:fullscreen img,
-.pd-image-box:fullscreen video {
-  overflow: hidden;
-}
-
-/* Fullscreen container */
-.pd-image-box:fullscreen {
-  width: 100vw;
-  height: 100vh;
-  padding: 0;
-  background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-/* Video wrapper takes full screen */
-.pd-image-box:fullscreen .pd-video-wrapper {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #000;
-}
-
-/*  VIDEO ITSELF */
-.pd-image-box:fullscreen .pd-video {
-  width: 100%;
-  height: 100%;
-  max-width: 100vw;
-  max-height: 100vh;
-
-  object-fit: contain; /*  NO CROP, NO STRETCH */
-  background: #000;
-}
-
-/* Prevent overflow */
-.pd-image-box:fullscreen video {
-  overflow: hidden;
-}
-
-@media (max-width: 426px){
-  .sma-main{
-    padding-left: 0%;
-  }
-
-  .sma-card{
-    margin-left: 5%;
-  }
-}
-
-@media (max-width: 768px) {
-  .sma-root {
+/* Mobile Layout */
+@media screen and (max-width: 618px) {
+  .ms-root {
     flex-direction: column;
   }
 
   .sma-main {
-    padding: 72px 5vw 28px;
+    padding: 80px 16px 40px;
+    display: block;
+    /* Allows natural scrolling on mobile */
   }
 
   .sma-card {
-    padding: 22px;
-    border-radius: 12px;
+    padding: 25px 20px;
+    border-radius: 15px;
   }
 
   .sma-grid {
-    grid-template-columns: 1fr; /* 🔥 single column */
-    gap: 14px;
+    grid-template-columns: 1fr;
+    /* Stack inputs */
+    gap: 20px;
   }
 
   .sma-title {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     text-align: center;
-  }
-
-  .sma-actions {
-    justify-content: center;
   }
 
   .sma-btn {
     width: 100%;
-    text-align: center;
+    /* Easy to tap on phone */
   }
 
-  .sma-preview-grid {
-    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  /* Prevent auto-zoom on mobile safari */
+  .sma-input,
+  select.sma-input,
+  .sma-textarea {
+    font-size: 16px;
+  }
+}
+
+/* ===============================
+   ANIMATIONS
+================================ */
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
 
-  .sma-preview {
-    height: 96px;
-  }
-
-  video.sma-preview {
-    height: 160px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
