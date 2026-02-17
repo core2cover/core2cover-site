@@ -14,7 +14,7 @@ const encodeData = (data) => {
 
 export async function POST(request) {
   try {
-    const { email, password } = await request.json();
+    const { email, password, rememberMe } = await request.json();
 
     const user = await prisma.user.findUnique({ 
       where: { email: email.toLowerCase().trim() } 
@@ -27,10 +27,13 @@ export async function POST(request) {
       );
     }
 
+    // Set token expiration based on rememberMe option
+    const tokenExpiration = rememberMe ? "30d" : "7d";
+
     const token = jwt.sign(
       { userId: user.id, email: user.email },
       process.env.NEXTAUTH_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: tokenExpiration }
     );
 
     // Prepare the user data for encoding

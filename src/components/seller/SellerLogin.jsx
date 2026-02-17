@@ -14,6 +14,7 @@ const SellerLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -54,7 +55,8 @@ const SellerLogin = () => {
     try {
       const response = await sellerLogin({ 
         email: email.toLowerCase().trim(), 
-        password 
+        password,
+        rememberMe
       });
       
       const data = response?.data ?? response;
@@ -132,6 +134,19 @@ const SellerLogin = () => {
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
+            </div>
+
+            <div className="input-groups" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+              <input
+                type="checkbox"
+                id="sellerRememberMe"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                style={{ width: 'auto', margin: 0 }}
+              />
+              <label htmlFor="sellerRememberMe" style={{ margin: 0, cursor: 'pointer' }}>
+                Remember me for 30 days
+              </label>
             </div>
 
             <p className="signup-text">

@@ -18,6 +18,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter(); 
@@ -83,7 +84,7 @@ export default function Login() {
     setLoading(true);
     try {
       // Call the backend login route
-      const response = await customerLogin({ email: email.trim(), password });
+      const response = await customerLogin({ email: email.trim(), password, rememberMe });
       const data = response?.data ?? response;
 
       // Save the JWT token normally for the interceptor to use
@@ -164,6 +165,19 @@ export default function Login() {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
+          </div>
+
+          <div className="input-group" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+            <input
+              type="checkbox"
+              id="rememberMe"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              style={{ width: 'auto', margin: 0 }}
+            />
+            <label htmlFor="rememberMe" style={{ margin: 0, cursor: 'pointer' }}>
+              Remember me for 30 days
+            </label>
           </div>
 
           <button type="submit" className="login-btn" disabled={loading}>

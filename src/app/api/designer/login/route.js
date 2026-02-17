@@ -13,7 +13,7 @@ const encodeData = (data) => {
 
 export async function POST(request) {
   try {
-    const { email, password } = await request.json();
+    const { email, password, rememberMe } = await request.json();
     const designer = await prisma.designer.findUnique({ 
       where: { email: email.trim().toLowerCase() } 
     });
@@ -27,7 +27,8 @@ export async function POST(request) {
       id: designer.id, 
       fullname: designer.fullname, 
       email: designer.email, 
-      availability: designer.availability 
+      availability: designer.availability,
+      rememberMe: rememberMe || false
     };
 
     return NextResponse.json({

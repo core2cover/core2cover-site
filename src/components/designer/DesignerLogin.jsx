@@ -14,6 +14,7 @@ const DesignerLogin = () => {
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -55,6 +56,7 @@ const DesignerLogin = () => {
       const res = await designerLogin({
         email: form.email.trim().toLowerCase(),
         password: form.password,
+        rememberMe,
       });
 
       const data = res.data;
@@ -129,6 +131,19 @@ const DesignerLogin = () => {
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
+          </div>
+
+          <div className="login-field" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
+            <input
+              type="checkbox"
+              id="designerRememberMe"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              style={{ width: 'auto', margin: 0 }}
+            />
+            <label htmlFor="designerRememberMe" style={{ margin: 0, cursor: 'pointer' }}>
+              Remember me for 30 days
+            </label>
           </div>
 
           <button className="login-btn" type="submit" disabled={loading}>

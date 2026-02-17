@@ -13,7 +13,7 @@ const encodeData = (data) => {
 
 export async function POST(request) {
   try {
-    const { email, password } = await request.json();
+    const { email, password, rememberMe } = await request.json();
     
     // Find the seller with a normalized email search
     const seller = await prisma.seller.findUnique({ 
@@ -28,7 +28,8 @@ export async function POST(request) {
     const sellerData = { 
       id: seller.id, 
       name: seller.name, 
-      email: seller.email 
+      email: seller.email,
+      rememberMe: rememberMe || false
     };
 
     return NextResponse.json({
