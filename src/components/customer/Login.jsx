@@ -49,6 +49,31 @@ export default function Login() {
     }
   };
 
+  /**
+   * Retrieves securely stored data from Local Storage.
+   */
+  const secureGetItem = (key) => {
+    try {
+      const encodedValue = localStorage.getItem(key);
+      if (!encodedValue) return null;
+      return atob(encodedValue);
+    } catch (e) {
+      console.error("Failed to decode stored value:", e);
+      return null;
+    }
+  };
+
+  /* =========================================
+      LOAD SAVED EMAIL ON MOUNT
+  ========================================= */
+  useEffect(() => {
+    const savedEmail = secureGetItem("rememberedEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
   /* =========================================
       SESSION SYNC & REDIRECT
   ========================================= */
@@ -90,6 +115,13 @@ export default function Login() {
       // Save the JWT token normally for the interceptor to use
       if (data?.token) {
         localStorage.setItem("token", data.token); 
+      }
+
+      // Handle Remember Me functionality
+      if (rememberMe) {
+        secureSetItem("rememberedEmail", email.trim());
+      } else {
+        localStorage.removeItem("rememberedEmail");
       }
 
       // Handle the encrypted payload from the backend

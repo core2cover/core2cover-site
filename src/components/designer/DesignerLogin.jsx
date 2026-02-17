@@ -43,6 +43,31 @@ const DesignerLogin = () => {
     }
   };
 
+  /**
+   * Retrieves securely stored data from Local Storage.
+   */
+  const secureGetItem = (key) => {
+    try {
+      const encodedValue = localStorage.getItem(key);
+      if (!encodedValue) return null;
+      return atob(encodedValue);
+    } catch (e) {
+      console.error("Failed to decode stored value:", e);
+      return null;
+    }
+  };
+
+  /* =========================================
+      LOAD SAVED EMAIL ON MOUNT
+  ========================================= */
+  React.useEffect(() => {
+    const savedEmail = secureGetItem("rememberedDesignerEmail");
+    if (savedEmail) {
+      setForm((prev) => ({ ...prev, email: savedEmail }));
+      setRememberMe(true);
+    }
+  }, []);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -60,6 +85,13 @@ const DesignerLogin = () => {
       });
 
       const data = res.data;
+
+      // Handle Remember Me functionality
+      if (rememberMe) {
+        secureSetItem("rememberedDesignerEmail", form.email.trim().toLowerCase());
+      } else {
+        localStorage.removeItem("rememberedDesignerEmail");
+      }
 
       // Handle the encrypted payload from the backend
       if (data?.payload) {

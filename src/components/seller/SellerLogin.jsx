@@ -43,6 +43,31 @@ const SellerLogin = () => {
     }
   };
 
+  /**
+   * Retrieves securely stored data from Local Storage.
+   */
+  const secureGetItem = (key) => {
+    try {
+      const encodedValue = localStorage.getItem(key);
+      if (!encodedValue) return null;
+      return atob(encodedValue);
+    } catch (e) {
+      console.error("Failed to decode stored value:", e);
+      return null;
+    }
+  };
+
+  /* =========================================
+      LOAD SAVED EMAIL ON MOUNT
+  ========================================= */
+  React.useEffect(() => {
+    const savedEmail = secureGetItem("rememberedSellerEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
@@ -60,6 +85,13 @@ const SellerLogin = () => {
       });
       
       const data = response?.data ?? response;
+
+      // Handle Remember Me functionality
+      if (rememberMe) {
+        secureSetItem("rememberedSellerEmail", email.toLowerCase().trim());
+      } else {
+        localStorage.removeItem("rememberedSellerEmail");
+      }
 
       // Handle the encrypted payload from the backend
       if (data?.payload) {
