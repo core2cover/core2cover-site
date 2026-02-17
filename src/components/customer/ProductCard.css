@@ -203,16 +203,16 @@
 ========================================= */
 @media (max-width: 600px) {
   .product-card {
+    border-radius: 12px;
     flex-direction: row;
     max-width: 100%;
-    height: 236px;
-    border-radius: 12px;
+    height: 306px;
   }
 
   .product-image-container {
-    width: 140px;
-    height: 100%;
     aspect-ratio: auto;
+    width: 580px;
+    height: 100%;
   }
 
   .product-info {
@@ -245,7 +245,8 @@
   padding: 12px 16px;
   display: flex;
   flex-direction: column;
-  gap: 1px; /* Tighter spacing between elements */
+  gap: 1px;
+  /* Tighter spacing between elements */
 }
 
 /* Header: Title Left, Rating Right */
@@ -313,7 +314,8 @@
 
 /* Footer: Price Left, Button Right */
 .product-footer-row {
-  margin-top: auto; /* Pushes to bottom */
+  margin-top: auto;
+  /* Pushes to bottom */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -322,11 +324,15 @@
 }
 
 .price-tag {
-  font-family: var(--font-heading); /* Playfair Display/Serif for a luxury feel */
-  font-size: 1.35rem; /* Slightly larger for prominence */
+  font-family: var(--font-heading);
+  /* Playfair Display/Serif for a luxury feel */
+  font-size: 1.35rem;
+  /* Slightly larger for prominence */
   font-weight: 800;
-  color: var(--text-dark); /* Using your branding variable */
-  letter-spacing: -0.02em; /* Tight tracking often seen in high-end design */
+  color: var(--text-dark);
+  /* Using your branding variable */
+  letter-spacing: -0.02em;
+  /* Tight tracking often seen in high-end design */
   display: flex;
   align-items: center;
   gap: 2px;
@@ -365,10 +371,12 @@
   color: #6b7280;
   margin: 8px 0;
   /* display: -webkit-box; */
-  -webkit-line-clamp: 2; /* Clips text to 2 lines */
+  -webkit-line-clamp: 2;
+  /* Clips text to 2 lines */
   -webkit-box-orient: vertical;
   overflow: hidden;
-  height: 2.5rem; /* Keeps height consistent even if bio is short */
+  height: 2.5rem;
+  /* Keeps height consistent even if bio is short */
 }
 
 .product-seller-group {
@@ -399,7 +407,8 @@
 .price-tag {
   display: flex;
   align-items: baseline;
-  flex-wrap: wrap; /* Allows unit to drop down if name is very long on tiny screens */
+  flex-wrap: wrap;
+  /* Allows unit to drop down if name is very long on tiny screens */
   gap: 4px;
   font-size: 1.25rem;
   font-weight: 700;
@@ -410,7 +419,8 @@
   font-size: 0.85rem;
   color: #6b7280;
   font-weight: 500;
-  white-space: nowrap; /* Prevents "sq. ft" from splitting into two lines */
+  white-space: nowrap;
+  /* Prevents "sq. ft" from splitting into two lines */
 }
 
 /* Tablet Responsiveness (under 1024px) */
@@ -418,6 +428,7 @@
   .price-tag {
     font-size: 1.15rem;
   }
+
   .price-unit {
     font-size: 0.8rem;
   }
@@ -426,7 +437,8 @@
 /* Mobile Responsiveness (under 768px) */
 @media (max-width: 768px) {
   .product-footer-row {
-    flex-direction: column; /* Stack price and button if space is tight */
+    flex-direction: column;
+    /* Stack price and button if space is tight */
     align-items: flex-start;
     gap: 12px;
   }
@@ -445,52 +457,65 @@
 @media (max-width: 480px) {
   .price-tag {
     display: flex;
-    justify-content: space-between; /* Pushes price and unit to edges if needed */
+    justify-content: space-between;
+    /* Pushes price and unit to edges if needed */
     align-items: center;
   }
 }
 
 .product-image-container {
-    position: relative; /* Required for the badge to stick to the corner */
+  position: relative;
+  /* Required for the badge to stick to the corner */
 }
 
 .stock-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 4px 8px;
-    font-size: 0.7rem;
-    font-weight: bold;
-    border-radius: 4px;
-    z-index: 2;
-    text-transform: uppercase;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  border-radius: 4px;
+  z-index: 2;
+  text-transform: uppercase;
 }
 
 /* Specific Badge Colors */
-.stock-badge.available { background: #2e7d32; color: white; }
-.stock-badge.low_stock { background: #ef6c00; color: white; }
-.stock-badge.out_of_stock { background: #c62828; color: white; }
+.stock-badge.available {
+  background: #2e7d32;
+  color: white;
+}
+
+.stock-badge.low_stock {
+  background: #ef6c00;
+  color: white;
+}
+
+.stock-badge.out_of_stock {
+  background: #c62828;
+  color: white;
+}
 
 /* Out of Stock Overlay for the Image */
 .oos-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(255, 255, 255, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #c62828;
-    font-weight: 800;
-    font-size: 1.2rem;
-    z-index: 1;
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #c62828;
+  font-weight: 800;
+  font-size: 1.2rem;
+  z-index: 1;
 }
 
 /* Dim the card if out of stock */
 .oos-card {
-    opacity: 0.8;
+  opacity: 0.8;
 }
 
 .product-view-btn.disabled {
-    background-color: #ccc !important;
-    cursor: not-allowed;
+  background-color: #ccc !important;
+  cursor: not-allowed;
 }
