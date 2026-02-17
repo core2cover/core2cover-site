@@ -207,7 +207,7 @@
     border-radius: 12px;
     flex-direction: row;
     max-width: 100%;
-    height: 180px;
+    height: 300px;
   }
 
   .product-image-container {
@@ -225,23 +225,25 @@
   }
 
   .product-info {
-    padding: 12px;
+    padding: 10px 12px;
     justify-content: space-between;
+    gap: 4px;
     flex: 1; 
     min-width: 0;
   }
 
   .product-desc,
-  .product-badge {
-    display: none;
-    margin-bottom: 2px;
-    /* Hide clutter on mobile list */
+  .product-desc-text {
+    display: -webkit-box; /* Re-enable display */
+    -webkit-line-clamp: 2; /* Show exactly 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    margin: 4px 0;
+    height: 2.3rem; /* Fixed height keeps all cards uniform */
+    color: var(--text-muted);
   }
-
-  .product-desc{
-      -webkit-line-clamp: 2;
-  }
-
   .product-title {
     font-size: 0.95rem;
     line-height: 1.2;
