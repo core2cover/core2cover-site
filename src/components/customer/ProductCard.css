@@ -229,6 +229,19 @@
 
   .product-title {
     font-size: 0.95rem;
+    white-space: normal; 
+    overflow-wrap: break-word; 
+    word-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%; 
+    line-height: 1.2;
+    margin-bottom: 4px;
+  }
+
+  .product-top-row {
+    flex-direction: column; /* Optional: stack rating below title if name is very long */
+    align-items: flex-start;
+    gap: 4px;
   }
 
   .product-footer {
