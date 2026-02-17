@@ -28,8 +28,7 @@ export async function POST(request) {
     const sellerData = { 
       id: seller.id, 
       name: seller.name, 
-      email: seller.email,
-      rememberMe: rememberMe || false
+      email: seller.email
     };
 
     return NextResponse.json({

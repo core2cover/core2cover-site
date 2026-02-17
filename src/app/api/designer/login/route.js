@@ -27,8 +27,7 @@ export async function POST(request) {
       id: designer.id, 
       fullname: designer.fullname, 
       email: designer.email, 
-      availability: designer.availability,
-      rememberMe: rememberMe || false
+      availability: designer.availability
     };
 
     return NextResponse.json({
