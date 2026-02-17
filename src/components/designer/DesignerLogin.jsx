@@ -63,7 +63,7 @@ const DesignerLogin = () => {
   React.useEffect(() => {
     const rememberedEmail = secureGetItem("rememberedDesignerEmail");
     if (rememberedEmail) {
-      setForm({ ...form, email: rememberedEmail });
+      setForm(prevForm => ({ ...prevForm, email: rememberedEmail }));
       setRememberMe(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
