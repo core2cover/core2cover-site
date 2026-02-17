@@ -244,6 +244,11 @@
     height: 2.3rem; /* Fixed height keeps all cards uniform */
     color: var(--text-muted);
   }
+
+  .product-badge{
+    top: 261px;
+  }
+  
   .product-title {
     font-size: 0.95rem;
     line-height: 1.2;
