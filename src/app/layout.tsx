@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   verification: {
     google: "48hxJVOfuV3-SlJW8Bhs4y6wFM3OEiyDY0vr2dNld48",
   },
-  metadataBase: new URL("https://core2cover.vercel.app"),
+  metadataBase: new URL("https://core2cover.in"),
   alternates: {
     canonical: "/",
   },
