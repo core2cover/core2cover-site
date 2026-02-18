@@ -150,16 +150,13 @@ export default function About() {
           </div>
           <aside className="card-right stats">
             <div className="stat">
-              <div className="stat-num">Curated</div>
-              <div className="stat-label">Interior Products</div>
+              <div className="stat-num">Curated Interior Products</div>
             </div>
             <div className="stat">
-              <div className="stat-num">Raw</div>
-              <div className="stat-label">Materials Marketplace</div>
+              <div className="stat-num">Raw Materials Marketplace</div>
             </div>
             <div className="stat">
-              <div className="stat-num">Freelance</div>
-              <div className="stat-label">Designer Hub</div>
+              <div className="stat-num">Freelance Designer Hub</div>
             </div>
           </aside>
         </section>
