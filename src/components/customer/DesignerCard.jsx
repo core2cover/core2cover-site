@@ -20,51 +20,52 @@ const DesignerCard = ({ id, name, category, image, avgRating, totalRatings, loca
 
   return (
     <article
-      className={`product-card ${isLocal ? "local-highlight" : ""}`}
+      className={`dc-card ${isLocal ? "dc-local-highlight" : ""}`}
       onClick={() => router.push(`/designer_info?id=${id}`)}
     >
-      <div className="product-image-container">
+      <div className="dc-image-container">
         {finalImage ? (
           <Image
             src={finalImage}
             alt={name}
-            className="product-image"
+            className="dc-image"
             fill
             unoptimized
           />
         ) : (
-          /* FALLBACK ICON DISPLAY */
-          <div className="product-image icon-fallback-container">
-            <FaRegUser className="fallback-user-icon" />
+          <div className="dc-image dc-icon-fallback">
+            <FaRegUser className="dc-fallback-icon" />
           </div>
         )}
-        <span className="product-badge">{category}</span>
-        {/* {isLocal && <span className="local-badge">Near You</span>} */}
+        {/* Desktop Category Badge */}
+        <span className="dc-badge-category dc-desktop-only">{category}</span>
       </div>
 
-      <div className="product-info">
-        <div className="product-top-row">
-          <h3 className="product-title">{name}</h3>
-          <div className="product-rating-badge">
-            <FaStar className="star-icon" />
-            <span className="rating-val">{avgRating || 0}</span>
+      <div className="dc-info">
+        <div className="dc-header-row">
+          <h3 className="dc-title">{name}</h3>
+          <div className="dc-rating-badge">
+            <FaStar className="dc-star-icon" />
+            <span className="dc-rating-val">{avgRating || 0}</span>
           </div>
         </div>
 
-        <p className="product-desc-text">{truncatedBio || "No bio provided."}</p>
+        <p className="dc-bio-text">{truncatedBio || "No bio provided."}</p>
 
-        <div className="product-seller-group">
-          <span className="seller-label">
+        <div className="dc-meta-group">
+          <span className="dc-meta-label">
             <FaBriefcase style={{ marginRight: "6px" }} /> {experience || 0} Yrs Experience
           </span>
-          <span className="location-label">
+          <span className="dc-location-label">
             <FaMapMarkerAlt /> {location || "Remote"}
           </span>
+          {/* Mobile Specific Category Label */}
+          <span className="dc-mobile-category">{category}</span>
         </div>
 
-        <div className="product-footer-row">
-          <span className="price-tag">Verified</span>
-          <button className="product-view-btn">View Profile</button>
+        <div className="dc-footer-row">
+          <span className="dc-status-tag">Verified</span>
+          <button className="dc-view-btn">View Profile</button>
         </div>
       </div>
     </article>
