@@ -150,7 +150,12 @@ const ProductCard = ({
           </div>
 
           <p className="product-desc-text">
-            {description ? (description.length > 80 ? description.substring(0, 80) + '...' : description) : "No description provided."}
+            {description
+              ? (description.split(" ").length > 10
+                ? description.split(" ").slice(0, 10).join(" ") + "..."
+                : description)
+              : "No description provided."
+            }
           </p>
 
           <div className="product-seller-group">
