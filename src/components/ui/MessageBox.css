@@ -1,0 +1,166 @@
+:root {
+  --sage-green: #606e52;
+  --error-red: #9e4a44;
+  --info-blue: #52667a;
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  /* Slightly more opaque for mobile readability */
+}
+
+.message-box-wrapper {
+  position: fixed;
+  top: 20px;
+  /* Reduced top spacing for mobile */
+  right: 20px;
+  left: 20px;
+  /* Added left to allow centering on mobile */
+  z-index: 10000;
+  perspective: 1000px;
+  pointer-events: none;
+  /* Allows clicks to pass through to buttons behind if needed */
+  display: flex;
+  justify-content: flex-end;
+  /* Keeps it on the right for desktop */
+}
+
+.message-box-glass {
+  pointer-events: auto;
+  /* Re-enables clicks for the box itself */
+  display: flex;
+  align-items: center;
+  width: 100%;
+  /* Full width on mobile */
+  max-width: 400px;
+  /* Prevents it from getting too wide on desktop */
+  padding: 14px 20px;
+  /* Slimmer padding for mobile */
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border-radius: 16px;
+  /* Slightly smaller radius for cleaner mobile look */
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  animation: elegantSlideIn 0.6s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+/* RESPONSIVE ADJUSTMENTS */
+@media screen and (max-width: 618px) {
+  .message-box-wrapper {
+    top: 80px;
+    /* Pushes the message below your mobile header */
+    right: 15px;
+    left: 15px;
+    justify-content: center;
+    /* Centers the notification on phones */
+  }
+
+  .message-box-glass {
+    min-width: unset;
+    /* Removes the desktop minimum width */
+    padding: 12px 16px;
+  }
+
+  .message-text {
+    font-size: 13px;
+    /* Slightly smaller text for mobile */
+  }
+
+  .message-icon-wrapper {
+    font-size: 18px;
+    margin-right: 12px;
+  }
+}
+
+@keyframes elegantSlideIn {
+  0% {
+    transform: translateY(-20px) scale(0.95);
+    /* Slide down instead of right for better mobile UX */
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Rest of your existing logic for icons and progress bar remains the same */
+.message-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success .message-icon-wrapper {
+  color: var(--sage-green);
+}
+
+.error .message-icon-wrapper {
+  color: var(--error-red);
+}
+
+.info .message-icon-wrapper {
+  color: var(--info-blue);
+}
+
+.message-content {
+  flex: 1;
+}
+
+.message-text {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  color: #2c3e50;
+  line-height: 1.4;
+}
+
+.message-close-minimal {
+  background: rgba(0, 0, 0, 0.03);
+  border: none;
+  color: #7f8c8d;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.message-progress-glow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(to right, transparent, currentColor);
+  transform-origin: left;
+  animation: progressLinear linear forwards;
+  opacity: 0.6;
+}
+
+@keyframes progressLinear {
+  0% {
+    transform: scaleX(1);
+  }
+
+  100% {
+    transform: scaleX(0);
+  }
+}
+
+.success .message-progress-glow {
+  color: var(--sage-green);
+}
+
+.error .message-progress-glow {
+  color: var(--error-red);
+}
+
+.info .message-progress-glow {
+  color: var(--info-blue);
+}

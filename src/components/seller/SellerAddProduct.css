@@ -1,0 +1,311 @@
+/* =========================================
+   CASA – Premium Interior Theme
+   Target: Seller Add Product
+   Prefixes: ms- / sma-
+========================================= */
+
+:root {
+  /* Sidebar Width from your existing config */
+  --ms-sidebar-w: 220px;
+
+  /* Refined Color Palette */
+  --green-dark: #4F5E44;
+  --green-mid: #6B7C5C;
+  --green-light: #91A56E;
+  --sage-bg: #F4F6F1;
+
+  --white: #ffffff;
+  --border-subtle: rgba(79, 94, 68, 0.12);
+
+  --text-main: #2F332B;
+  --text-soft: #7A7F75;
+
+  --radius-lg: 20px;
+  --radius-md: 12px;
+
+  --shadow-sm: 0 4px 12px rgba(79, 94, 68, 0.05);
+  --shadow-lg: 0 20px 40px rgba(79, 94, 68, 0.12);
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --font-ui: "Inter", "Helvetica", Arial, sans-serif;
+  --font-heading: "Playfair Display", serif;
+}
+
+/* ===============================
+   ROOT & LAYOUT
+================================ */
+.ms-root {
+  min-height: 100vh;
+  display: flex;
+  background-color: var(--sage-bg);
+  /* Elegant background texture */
+  background-image:
+    radial-gradient(at 0% 0%, rgba(145, 165, 110, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(96, 110, 82, 0.08) 0px, transparent 50%);
+  font-family: var(--font-ui);
+}
+
+.sma-main {
+  flex: 1;
+  padding: 80px 24px 60px;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* ===============================
+   THE CARD
+================================ */
+.sma-card {
+  width: 100%;
+  max-width: 900px;
+  background: var(--white);
+  padding: 40px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--white);
+  animation: fadeSlide 0.6s var(--ease) forwards;
+  margin: 0 auto;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Accent bar at the top of the card */
+.sma-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, var(--green-dark), var(--green-light));
+}
+
+.sma-title {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--green-dark);
+  margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ===============================
+   FORM GRID & FIELDS
+================================ */
+.sma-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px 30px;
+}
+
+.sma-full {
+  grid-column: 1 / -1;
+}
+
+.sma-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sma-field span {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+/* ===============================
+   INPUT STYLING
+================================ */
+.sma-input,
+.sma-textarea,
+.sma-file,
+select.sma-input {
+  padding: 13px 16px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-subtle);
+  background: #FBFCF9;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  outline: none;
+  transition: all 0.25s var(--ease);
+  box-shadow: var(--shadow-sm);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sma-input:hover,
+.sma-textarea:hover {
+  border-color: var(--green-light);
+}
+
+.sma-input:focus,
+.sma-textarea:focus {
+  background: var(--white);
+  border-color: var(--green-mid);
+  box-shadow: 0 0 0 4px rgba(107, 124, 92, 0.1);
+}
+
+.sma-input.sma-readonly {
+  background-color: #F1F3EE;
+  color: var(--green-dark);
+  font-weight: 700;
+  border: 1.5px dashed var(--border-subtle);
+}
+
+.sma-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* ===============================
+   MEDIA UPLOADS & PREVIEWS
+================================ */
+.sma-file {
+  background: var(--white);
+  border: 2px dashed var(--border-subtle);
+  padding: 15px;
+  cursor: pointer;
+}
+
+.sma-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.sma-preview {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  transition: transform 0.2s ease;
+}
+
+.sma-preview:hover {
+  transform: scale(1.03);
+}
+
+video.sma-preview {
+  height: auto;
+  max-height: 250px;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.sma-actions {
+  margin-top: 35px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sma-btn {
+  padding: 15px 35px;
+  border-radius: var(--radius-md);
+  border: none;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+}
+
+.sma-btn--primary {
+  background: var(--green-dark);
+  color: var(--white);
+  box-shadow: 0 8px 20px rgba(79, 94, 68, 0.2);
+}
+
+.sma-btn--primary:hover:not(:disabled) {
+  background: var(--green-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(79, 94, 68, 0.25);
+}
+
+.sma-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+}
+
+/* ===============================
+   RESPONSIVE LOGIC
+================================ */
+
+/* Desktop: Offset for Fixed Sidebar */
+@media screen and (min-width: 619px) {
+  .sma-main {
+    /* Respects your 220px fixed sidebar width */
+    padding-left: calc(var(--ms-sidebar-w) + 40px);
+    padding-right: 40px;
+  }
+}
+
+/* Tablet Layout */
+@media screen and (max-width: 1024px) {
+  .sma-card {
+    padding: 30px;
+  }
+}
+
+/* Mobile Layout */
+@media screen and (max-width: 618px) {
+  .ms-root {
+    flex-direction: column;
+  }
+
+  .sma-main {
+    padding: 80px 16px 40px;
+    display: block;
+    /* Allows natural scrolling on mobile */
+  }
+
+  .sma-card {
+    padding: 25px 20px;
+    border-radius: 15px;
+  }
+
+  .sma-grid {
+    grid-template-columns: 1fr;
+    /* Stack inputs */
+    gap: 20px;
+  }
+
+  .sma-title {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .sma-btn {
+    width: 100%;
+    /* Easy to tap on phone */
+  }
+
+  /* Prevent auto-zoom on mobile safari */
+  .sma-input,
+  select.sma-input,
+  .sma-textarea {
+    font-size: 16px;
+  }
+}
+
+/* ===============================
+   ANIMATIONS
+================================ */
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,283 @@
+/* =========================================
+   DESIGNER SIGNUP — PREMIUM THEME
+   Palette: Forest Green, Gold, and Ivory
+========================================= */
+
+:root {
+  --ds-forest: #2d3624;
+  --ds-olive: #606e52;
+  --ds-gold: #91a56e;
+  --ds-sand: #f4f7ef;
+  --ds-white: #ffffff;
+  --ds-error: #c23b3b;
+  --ds-shadow: 0 20px 50px rgba(45, 54, 36, 0.15);
+  --ds-ease: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.designer-signup-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fdfdfb 0%, #e8efdc 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  font-family: "Helvetica", Arial, sans-serif;
+}
+
+.ds-auth-box {
+  width: 100%;
+  max-width: 650px;
+  /* Wider for designer grid */
+  background: var(--ds-white);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: var(--ds-shadow);
+  border: 1px solid rgba(96, 110, 82, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.brand-logo {
+  margin-bottom: 10px;
+  object-fit: contain;
+}
+
+.ds-sub {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--ds-forest);
+  margin-bottom: 25px;
+  letter-spacing: -0.5px;
+}
+
+/* =========================================
+   FORM GRID
+========================================= */
+.ds-form {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* Two columns on desktop */
+  gap: 20px;
+}
+
+.ds-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Fields that span full width */
+.ds-full {
+  grid-column: span 2;
+}
+
+.ds-field label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ds-forest);
+  margin-left: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ds-form input:not([type="checkbox"]) {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(96, 110, 82, 0.15);
+  background: #fdfdfd;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+  transition: var(--ds-ease);
+  box-sizing: border-box;
+}
+
+.ds-form input:focus {
+  outline: none;
+  border-color: var(--ds-gold);
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(145, 165, 110, 0.1);
+}
+
+.ds-disabled {
+  background: #f5f5f5 !important;
+  color: #999 !important;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   OTP SECTION
+========================================= */
+.ds-otp-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.ds-otp-input {
+  max-width: 150px !important;
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+/* =========================================
+   REVEAL SECTION
+========================================= */
+.ds-reveal {
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.6s ease, opacity 0.4s ease;
+}
+
+.ds-reveal.show {
+  max-height: 1000px;
+  opacity: 1;
+  margin-top: 10px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(96, 110, 82, 0.1);
+}
+
+.ds-password-wrap {
+  position: relative;
+}
+
+.ds-toggle-visibility {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--ds-olive);
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  font-size: 1.1rem;
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+.ds-btn {
+  background: var(--ds-forest);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--ds-ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ds-btn:hover:not(:disabled) {
+  background: var(--ds-olive);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(45, 54, 36, 0.2);
+}
+
+.ds-btn.small {
+  padding: 10px 20px;
+  font-size: 0.85rem;
+  background: var(--ds-olive);
+}
+
+.ds-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   FOOTER & ERRORS
+========================================= */
+.ds-error {
+  width: 100%;
+  background: #fff1f1;
+  color: var(--ds-error);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+  border: 1px solid rgba(194, 59, 59, 0.2);
+}
+
+.ds-footer {
+  grid-column: span 2;
+  text-align: center;
+  margin-top: 25px;
+  color: #666;
+  font-weight: 600;
+}
+
+.ds-link {
+  color: var(--ds-forest);
+  text-decoration: none;
+  font-weight: 800;
+}
+
+.ds-link:hover {
+  text-decoration: underline;
+}
+
+/* =========================================
+   RESPONSIVE (TABLET & MOBILE)
+========================================= */
+@media (max-width: 768px) {
+
+  .ds-form,
+  .ds-reveal {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ds-full,
+  .ds-reveal {
+    grid-column: span 1;
+  }
+
+  .ds-auth-box {
+    padding: 30px 20px;
+  }
+}
+
+.ds-input-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ds-input-icon-wrapper input {
+  padding-right: 35px; /* Space for the icon */
+  width: 100%;
+}
+
+.ds-input-icon {
+  position: absolute;
+  right: 12px;
+  color: var(--ds-olive);
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+/* Ensure the Autocomplete dropdown is visible above the signup card */
+.pac-container {
+  z-index: 2000 !important;
+  font-family: inherit;
+  border-radius: 8px;
+  margin-top: 2px;
+}

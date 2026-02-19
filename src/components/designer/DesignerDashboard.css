@@ -1,0 +1,929 @@
+/* ===============================
+   DESIGN TOKENS
+=============================== */
+:root {
+  --green-dark: #606e52;
+  --green-mid: #91a56e;
+  --green-light: #c0cca4;
+
+  --text-dark: #2f2f2f;
+  --text-muted: #8f8b84;
+
+  --bg-main: #f6f7f2;
+  --white: #ffffff;
+
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 18px 48px rgba(0, 0, 0, 0.14);
+
+  --transition: 260ms cubic-bezier(.2, .9, .3, 1);
+
+  --star-gold: #f4b400;
+  --danger: #dc2626;
+
+  --brand-font: "CaviarDreams", sans-serif;
+  --brand-font-bold: "CaviarDreams", sans-serif;
+  --brand-font-weight: 400;
+  --brand-font-bold-weight: 700;
+}
+
+@font-face {
+  font-family: "CaviarDreams";
+  src: url("/fonts/CaviarDreams.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CaviarDreams";
+  src: url("/fonts/CaviarDreams_Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+
+
+/* ===============================
+   NAVBAR
+=============================== */
+
+.brand {
+  font-family: var(--brand-font);
+  font-size: 1.25rem;
+  color: var(--green-dark) !important;
+  line-height: 1;
+}
+
+.brand-bold {
+  font-weight: 700;
+  color: var(--green-dark) !important;
+}
+/* =========================================
+   CASA — PREMIUM NAVBAR STYLES
+   Designer Dashboard Focus
+========================================= */
+
+.navbar {
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 80px;
+  /* Fixed height for consistent vertical centering */
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.nav-container {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* --- LOGO & BRAND ALIGNMENT --- */
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+.nav-logo-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.nav-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* Space between logo image and text */
+}
+
+/* ===============================
+   NAVBAR BRAND STYLING
+=============================== */
+
+/* This targets the outer span */
+.brand {
+  font-family: var(--brand-font);
+  font-weight: var(--brand-font-weight);
+  letter-spacing: -0.4px;
+  color: var(--green-dark); /* Changed from --olive to match your tokens */
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+/* This targets the inner span inside BrandBold */
+.brand-bold {
+  font-family: var(--brand-font-bold) !important;
+  font-weight: var(--brand-font-bold-weight) !important;
+  font-size: 1.6rem; /* Ensures it matches the size of the non-bold version */
+  letter-spacing: -0.5px;
+}
+
+/* --- RIGHT SECTION & NAVIGATION --- */
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.nav-links li{
+  color: white;
+}
+
+.seller-bttn {
+  background: #606e52;
+  color: #ffffff !important;
+  padding: 10px 22px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: transform 0.2s, background 0.2s;
+  display: inline-block;
+}
+
+.seller-bttn:hover {
+  background: #91a56e;
+  transform: translateY(-1px);
+}
+
+/* --- HAMBURGER MENU --- */
+.hamburger {
+  display: none;
+  /* Hidden by default on desktop */
+  font-size: 1.5rem;
+  color: #606e52;
+  cursor: pointer;
+  z-index: 1100;
+}
+
+/* --- RESPONSIVE LOGIC --- */
+@media (max-width: 992px) {
+  .hamburger.always-visible {
+    display: block;
+    /* Force visible as per your JSX class */
+  }
+
+  .hamburger {
+    display: block;
+    position: relative;
+    z-index: 1100;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    /* Hidden off-screen */
+    width: 280px;
+    height: 100vh;
+    background: #ffffff;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.05);
+    z-index: 1050;
+  }
+
+  .nav-links.open {
+    right: 0;
+    width: 50%;
+        height: 20%;
+    /* Slide in */
+  }
+
+  .nav-links li {
+    margin: 15px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand {
+    font-size: 1.3rem;
+  }
+
+  .nav-container {
+    padding: 0 16px;
+  }
+}
+
+.seller-btn {
+  background: var(--green-dark);
+  color: white !important;
+  padding: 10px 22px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: var(--transition);
+  display: inline-block;
+}
+
+.seller-btn:hover {
+  background: var(--green-mid);
+  transform: translateY(-1px);
+}
+
+.hamburger {
+  display: none;
+  font-size: 1.5rem;
+  color: var(--green-dark);
+  cursor: pointer;
+}
+
+/* ===============================
+   MOBILE NAVBAR LOGIC
+=============================== */
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .nav-links {
+    display: none;
+    /* Hide by default on mobile */
+    flex-direction: column;
+    position: absolute;
+    top: 70px;
+    width: 100%;
+    background: var(--white);
+    padding: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    gap: 15px;
+  }
+
+  .nav-links.open {
+    display: flex;
+    /* Show when menuOpen is true */
+  }
+}
+
+/* ===============================
+   PAGE
+=============================== */
+.dd-dashboard {
+  padding: 40px 6vw 60px;
+  background: linear-gradient(180deg, #fafcf7, var(--bg-main));
+  min-height: 100vh;
+  font-family: "Helvetica", sans-serif;
+}
+
+/* ===============================
+   HEADER
+=============================== */
+.dd-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.dd-title {
+  font-family: "Big Caslon", serif;
+  font-size: 2.3rem;
+  color: var(--green-dark);
+  margin: 0;
+}
+
+.dd-sub {
+  margin-top: 6px;
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+/* ===============================
+   TOP RATING CARD
+=============================== */
+.dd-top-rating-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  min-width: 140px;
+  box-shadow: var(--shadow-soft);
+  text-align: right;
+}
+
+.dd-top-stars {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.dd-top-rating-value {
+  margin-top: 6px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.dd-top-out {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.dd-top-review-count {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ===============================
+   DASH GRID
+=============================== */
+.dd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+}
+
+/* ===============================
+   DASH CARD
+=============================== */
+.dd-card {
+  background: var(--white);
+  padding: 26px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid rgba(96, 110, 82, 0.15);
+}
+
+.dd-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+}
+
+.dd-icon {
+  font-size: 1.8rem;
+  color: var(--green-dark);
+  margin-bottom: 12px;
+}
+
+.dd-card h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.dd-card p {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* ===============================
+   SETTINGS CARD
+=============================== */
+.dd-setting-card {
+  margin-top: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dd-setting-info h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.dd-setting-info p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Toggle */
+.dd-toggle-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.dd-toggle-icon {
+  font-size: 34px;
+}
+
+.dd-on {
+  color: var(--green-dark);
+}
+
+.dd-off {
+  color: #b6b6b6;
+}
+
+/* ===============================
+   REVIEWS SECTION
+=============================== */
+.dd-reviews-section {
+  margin-top: 48px;
+}
+
+.dd-reviews-title {
+  font-size: 1.3rem;
+  margin-bottom: 18px;
+  color: var(--text-dark);
+}
+
+.dd-reviews-list {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1000px) {
+  .dd-reviews-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Review Card */
+.dd-review-row {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display: flex;
+  gap: 18px;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition);
+}
+
+.dd-review-row:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Reviewer */
+.dd-review-left {
+  min-width: 160px;
+}
+
+.dd-reviewer-name {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.dd-reviewer-name::before {
+  content: attr(data-initial);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--green-light);
+  color: var(--green-dark);
+  font-weight: 800;
+}
+
+.dd-review-date {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Review content */
+.dd-review-right {
+  flex: 1;
+}
+
+.dd-review-stars-inline {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.star.filled,
+.star.half {
+  color: var(--star-gold);
+}
+
+.star.empty {
+  color: #ddd;
+}
+
+.dd-review-text {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--text-dark);
+}
+
+/* ===============================
+   STATES
+=============================== */
+.dd-empty-text {
+  padding: 14px;
+  background: #f8faf9;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+}
+
+.dd-form-error {
+  color: var(--danger);
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+/* ===============================
+   ANIMATION
+=============================== */
+.dd-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: ddFadeIn 0.6s ease forwards;
+}
+
+.dd-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.dd-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.dd-delay-3 {
+  animation-delay: 0.3s;
+}
+
+.dd-delay-4 {
+  animation-delay: 0.4s;
+}
+
+@keyframes ddFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===============================
+   RESPONSIVE
+=============================== */
+@media (max-width: 769px) {
+  .dd-header {
+    flex-direction: column;
+  }
+
+  .nav-links-open {
+    display: flex;
+    width: 254px;
+    height: 50px;
+  }
+
+  .dd-review-row {
+    flex-direction: column;
+  }
+
+  .dd-review-left {
+    min-width: auto;
+  }
+}
+
+/* Ensure nav-links are visible on Desktop */
+@media (min-width: 769px) {
+  .nav-links {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    position: static !important;
+    background: none !important;
+  }
+
+  .hamburger {
+    display: none !important;
+  }
+}
+
+
+
+/* Header Stats */
+.dd-header-stats {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: white;
+  padding: 10px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--green-dark);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 30px;
+  background: #e5e7eb;
+}
+
+/* Reviews Section */
+.dd-reviews-section {
+  margin-top: 40px;
+  background: white;
+  border-radius: 18px;
+  padding: 25px;
+  border: 1px solid #eef2e6;
+  text-align: left;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.view-all-link {
+  font-size: 0.85rem;
+  color: var(--green-mid);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.review-item {
+  padding: 15px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.review-item:last-child {
+  border-bottom: none;
+}
+
+.review-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.reviewer-name {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.review-stars {
+  font-weight: 700;
+  color: #ca8a04;
+}
+
+.review-text {
+  font-style: italic;
+  color: #4b5563;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+.review-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Full History Section Styling */
+.dd-full-history {
+  margin-top: 60px;
+  background: white;
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.04);
+  border: 1px solid #eef2e6;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #f6f7f2;
+  padding-bottom: 15px;
+}
+
+.history-header h3 {
+  font-family: "Big Caslon", serif;
+  font-size: 1.8rem;
+  color: var(--green-dark);
+  margin: 0;
+}
+
+.history-count {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.history-item {
+  padding: 24px;
+  background: #fafcf7;
+  border-radius: 16px;
+  border: 1px solid #f0f3ea;
+  transition: var(--transition);
+}
+
+.history-item:hover {
+  border-color: var(--green-mid);
+  transform: translateX(5px);
+}
+
+.history-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.reviewer-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.reviewer-avatar {
+  width: 45px;
+  height: 45px;
+  background: var(--green-dark);
+  color: white;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.reviewer-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.reviewer-details .name {
+  font-weight: 700;
+  color: var(--text-dark);
+  font-size: 1.05rem;
+}
+
+.reviewer-details .date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Star logic */
+.review-rating {
+  display: flex;
+  gap: 3px;
+}
+
+.star-active {
+  color: #f4b400;
+  font-size: 0.9rem;
+}
+
+.star-inactive {
+  color: #e5e7eb;
+  font-size: 0.9rem;
+}
+
+.history-item-body .comment {
+  font-style: italic;
+  font-size: 1rem;
+  color: #4a5568;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.no-history {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .history-item-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .review-rating {
+    margin-left: 60px;
+  }
+}
+
+.verification-gate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #fdfdfb;
+  padding: 20px;
+}
+
+.verification-card {
+  max-width: 450px;
+  background: white;
+  padding: 40px;
+  border-radius: 24px;
+  text-align: center;
+  box-shadow: 0 12px 34px rgba(96, 110, 82, 0.12);
+  border: 1px solid #eef2e6;
+}
+
+.verification-card h2 {
+  font-family: "Big Caslon", serif;
+  color: #606e52;
+  font-size: 1.8rem;
+  margin: 15px 0;
+}
+
+.verification-card p {
+  color: #6b7280;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.verification-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff8e6;
+  color: #ca8a04;
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin: 25px 0;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: #facc15;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.5; }
+}
+
+.logout-btn {
+  background: none;
+  border: 1.5px solid #606e52;
+  color: #606e52;
+  padding: 10px 25px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.3s;
+}
+
+.logout-btn:hover {
+  background: #606e52;
+  color: white;
+}

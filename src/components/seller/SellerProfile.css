@@ -1,0 +1,305 @@
+/* =========================================
+   CASA – Seller Profile (Production Ready)
+   Olive / Sage Admin Theme
+========================================= */
+
+/* ======================
+   DESIGN TOKENS
+====================== */
+:root {
+  --ms-sidebar-w: 220px;
+
+  --ms-bg: #f4f6f1;
+  --ms-surface: #ffffff;
+
+  --ms-primary: #6b7c5c;
+  --ms-primary-dark: #4f5e44;
+  --ms-accent: #a8b79c;
+
+  --ms-ink: #2f332b;
+  --ms-muted: #7a7f75;
+
+  --ms-border: rgba(79, 94, 68, 0.15);
+  --ms-shadow: 0 14px 36px rgba(47, 51, 43, 0.12);
+
+  --ms-radius-lg: 18px;
+  --ms-radius-md: 12px;
+  --ms-radius-sm: 8px;
+
+  --ms-transition: 0.25s ease;
+}
+
+/* ======================
+   ROOT LAYOUT
+====================== */
+.bs-layout-root {
+  min-height: 100vh;
+  background: var(--ms-bg);
+  display: flex;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* ======================
+   CONTENT SHELL
+====================== */
+.bs-profile-shell {
+  margin-left: var(--ms-sidebar-w);
+  padding: 42px;
+  width: 100%;
+  max-width: 960px;
+  box-sizing: border-box;
+  transition: var(--ms-transition);
+}
+
+/* ======================
+   PAGE HEADING
+====================== */
+.bs-heading {
+  font-size: 1.9rem;
+  font-weight: 900;
+  color: var(--ms-ink);
+  margin-bottom: 28px;
+  letter-spacing: -0.3px;
+}
+
+/* ======================
+   CARD BASE
+====================== */
+.bs-card {
+  background: var(--ms-surface);
+  border-radius: var(--ms-radius-lg);
+  border: 1px solid var(--ms-border);
+  box-shadow: var(--ms-shadow);
+  padding: 34px;
+  transition: var(--ms-transition);
+}
+
+.bs-card:hover {
+  box-shadow: 0 18px 46px rgba(47, 51, 43, 0.14);
+}
+
+/* ======================
+   PROFILE VIEW MODE
+====================== */
+.profile-view-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-info-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+  margin-bottom: 36px;
+}
+
+.info-row {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--ms-border);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: var(--ms-muted);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.info-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--ms-ink);
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* ======================
+   ACTION BUTTONS
+====================== */
+.profile-actions,
+.form-buttons {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+/* ======================
+   BUTTONS
+====================== */
+.bs-btn {
+  padding: 13px 26px;
+  border-radius: var(--ms-radius-md);
+  font-weight: 900;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  transition: var(--ms-transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.bs-btn--primary {
+  background: linear-gradient(135deg,
+      var(--ms-primary),
+      var(--ms-primary-dark));
+  color: #ffffff;
+}
+
+.bs-btn--primary:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+}
+
+.bs-btn--primary:active {
+  transform: translateY(0);
+}
+
+.bs-btn--primary:disabled {
+  background: var(--ms-accent);
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.85;
+}
+
+.bs-btn--ghost {
+  background: transparent;
+  border: 1px dashed var(--ms-border);
+  color: var(--ms-muted);
+}
+
+.bs-btn--ghost:hover {
+  background: rgba(107, 124, 92, 0.1);
+  color: var(--ms-ink);
+}
+
+/* ======================
+   EDIT FORM
+====================== */
+.bs-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.input-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.input-field label {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: var(--ms-ink);
+}
+
+.input-field input {
+  padding: 14px 18px;
+  border-radius: var(--ms-radius-sm);
+  border: 1px solid var(--ms-border);
+  background: #fafafa;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ms-ink);
+  transition: var(--ms-transition);
+}
+
+.input-field input::placeholder {
+  color: var(--ms-muted);
+  font-weight: 600;
+}
+
+.input-field input:focus {
+  outline: none;
+  border-color: var(--ms-primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(107, 124, 92, 0.12);
+}
+
+/* Disabled Inputs */
+.disabled-input {
+  background: #ededed !important;
+  color: var(--ms-muted) !important;
+  cursor: not-allowed;
+  box-shadow: none !important;
+}
+
+/* ======================
+   LOADING STATE
+====================== */
+.loading-container {
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-text {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--ms-primary);
+  letter-spacing: 1px;
+}
+
+/* ======================
+   RESPONSIVE DESIGN
+====================== */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .bs-profile-shell {
+    padding: 28px;
+    max-width: 100%;
+  }
+
+  .bs-card {
+    padding: 28px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .bs-profile-shell {
+    margin-left: 0;
+    padding-left: 230px;
+  }
+
+  .profile-actions,
+  .form-buttons {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .bs-btn {
+    width: 100%;
+  }
+
+  .bs-heading {
+    font-size: 1.6rem;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .bs-profile-shell {
+    padding: 88px 16px 20px;
+  }
+
+  .info-value {
+    font-size: 1rem;
+  }
+
+  .bs-card {
+    padding: 24px 20px;
+  }
+}
