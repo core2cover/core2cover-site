@@ -87,7 +87,7 @@
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 15px;
   width: 100%;
-  max-width: 1440px;
+  /* max-width: 1440px; */
   margin: 0 auto;
   padding-bottom: 40px;
 }
