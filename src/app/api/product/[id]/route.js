@@ -2,6 +2,7 @@
 
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { uploadToCloudinary } from "@/lib/cloudinary";
 
 const encodeData = (data) => {
   const jsonString = JSON.stringify(data);
@@ -28,7 +29,7 @@ export async function GET(request, { params }) {
       },
     });
 
-    if (!product) return NextResponse.json(null, { status: 404 });
+    if (!product) return NextResponse.json({ message: "Product not found" }, { status: 404 });
 
     // FIX: Include description and ensure consistent naming
     const productData = {
@@ -51,12 +52,14 @@ export async function GET(request, { params }) {
       installationCharge: product.seller?.delivery?.installationCharge ?? 0,
       shippingChargeType: product.seller?.delivery?.shippingChargeType ?? "Paid",
       shippingCharge: product.seller?.delivery?.shippingCharge ?? 0,
+      availability: product.availability || "available"
     };
 
     return NextResponse.json({
       payload: encodeData(productData)
     });
   } catch (err) {
+    console.error("SERVER-SIDE GET ERROR:", err);
     return NextResponse.json({ message: "Server error" }, { status: 500 });
   }
 }
