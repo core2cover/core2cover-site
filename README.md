@@ -34,3 +34,23 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Pushing to Upstream Demo Branch
+
+This repository can be pushed to the original [core2cover/core2cover-site](https://github.com/core2cover/core2cover-site) demo branch.
+
+### Quick Start
+
+```bash
+# Using the provided script
+./push-to-demo.sh
+
+# Or manually
+git push upstream main:demo
+```
+
+For detailed instructions, see [UPSTREAM_PUSH.md](./UPSTREAM_PUSH.md).
+
+### Automated Push with GitHub Actions
+
+A GitHub Actions workflow is configured to automatically push to the demo branch. See `.github/workflows/push-to-demo.yml` for details.
