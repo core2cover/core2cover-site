@@ -14,20 +14,30 @@ const SellerLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // 1. SESSION CHECK (Redirect if already logged in)
+  React.useEffect(() => {
+    // Check both, but preference key is in localStorage now
+    const sellerId = localStorage.getItem("sellerId") || sessionStorage.getItem("sellerId");
+    if (sellerId) {
+      router.replace("/sellerdashboard");
+    }
+  }, [router]);
 
   /* =========================================
       EASY ENCRYPTION HELPERS
   ========================================= */
 
   /**
-   * Scrambles data before saving to Local Storage to prevent plain-text visibility.
+   * Scrambles data before saving to Storage to prevent plain-text visibility.
    */
-  const secureSetItem = (key, value) => {
+  const secureSetItem = (storage, key, value) => {
     if (!value) return;
     const encodedValue = btoa(String(value)); // Encodes to Base64
-    localStorage.setItem(key, encodedValue);
+    storage.setItem(key, encodedValue);
   };
 
   /**
@@ -58,10 +68,11 @@ const SellerLogin = () => {
       });
 
       const data = response?.data ?? response;
-      // Enforce persistent storage (localStorage) for automatic redirect support
+
+      // FORCE PERSISTENCE: Always use localStorage (Like Designer Login)
       const storage = localStorage;
 
-      // Clear specific keys in storage to avoid conflicts
+      // Clear specific keys in BOTH storages to avoid conflicts/leftovers
       localStorage.removeItem("sellerId");
       localStorage.removeItem("sellerEmail");
       localStorage.removeItem("sellerProfile");
@@ -130,6 +141,7 @@ const SellerLogin = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  style={{ borderRadius: '0', border: 'none', outline: 'none', height: '100%', width: '100%' }}
                 />
                 <button
                   type="button"
@@ -140,8 +152,6 @@ const SellerLogin = () => {
                 </button>
               </div>
             </div>
-
-
 
             <p className="signup-text">
               Don’t have a seller account?{" "}

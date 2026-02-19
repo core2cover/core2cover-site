@@ -13,6 +13,14 @@ const DesignerLogin = () => {
   const router = useRouter();
 
   const [form, setForm] = useState({ email: "", password: "" });
+
+  // 1. SESSION CHECK (Redirect if already logged in)
+  React.useEffect(() => {
+    const designerId = localStorage.getItem("designerId");
+    if (designerId) {
+      router.replace("/designerdashboard");
+    }
+  }, [router]);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
