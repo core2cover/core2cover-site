@@ -1,0 +1,53 @@
+name: Push to Upstream Demo Branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to push to demo'
+        required: true
+        default: 'main'
+        type: string
+  push:
+    branches:
+      - main
+
+jobs:
+  push-to-demo:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.branch || 'main' }}
+      
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+      
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/core2cover/core2cover-site.git || true
+          git remote -v
+      
+      - name: Push to upstream demo branch
+        env:
+          UPSTREAM_TOKEN: ${{ secrets.UPSTREAM_TOKEN }}
+        run: |
+          if [ -z "$UPSTREAM_TOKEN" ]; then
+            echo "Error: UPSTREAM_TOKEN secret is not set"
+            echo "Please add a GitHub Personal Access Token as a secret named UPSTREAM_TOKEN"
+            echo "The token needs write access to https://github.com/core2cover/core2cover-site"
+            exit 1
+          fi
+          
+          # Push to upstream demo branch using the token
+          git push https://${UPSTREAM_TOKEN}@github.com/core2cover/core2cover-site.git HEAD:demo
+      
+      - name: Summary
+        if: success()
+        run: |
+          echo "✅ Successfully pushed to https://github.com/core2cover/core2cover-site/tree/demo"
