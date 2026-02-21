@@ -14,20 +14,30 @@ const SellerLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // 1. SESSION CHECK (Redirect if already logged in)
+  React.useEffect(() => {
+    // Check both, but preference key is in localStorage now
+    const sellerId = localStorage.getItem("sellerId") || sessionStorage.getItem("sellerId");
+    if (sellerId) {
+      router.replace("/sellerdashboard");
+    }
+  }, [router]);
 
   /* =========================================
       EASY ENCRYPTION HELPERS
   ========================================= */
-  
+
   /**
-   * Scrambles data before saving to Local Storage to prevent plain-text visibility.
+   * Scrambles data before saving to Storage to prevent plain-text visibility.
    */
-  const secureSetItem = (key, value) => {
+  const secureSetItem = (storage, key, value) => {
     if (!value) return;
     const encodedValue = btoa(String(value)); // Encodes to Base64
-    localStorage.setItem(key, encodedValue);
+    storage.setItem(key, encodedValue);
   };
 
   /**
@@ -52,26 +62,34 @@ const SellerLogin = () => {
     setLoading(true);
 
     try {
-      const response = await sellerLogin({ 
-        email: email.toLowerCase().trim(), 
-        password 
+      const response = await sellerLogin({
+        email: email.toLowerCase().trim(),
+        password
       });
-      
+
       const data = response?.data ?? response;
+
+      // FORCE PERSISTENCE: Always use localStorage (Like Designer Login)
+      const storage = localStorage;
+
+      // Clear specific keys in BOTH storages to avoid conflicts/leftovers
+      localStorage.removeItem("sellerId");
+      localStorage.removeItem("sellerEmail");
+      localStorage.removeItem("sellerProfile");
+      sessionStorage.removeItem("sellerId");
+      sessionStorage.removeItem("sellerEmail");
+      sessionStorage.removeItem("sellerProfile");
 
       // Handle the encrypted payload from the backend
       if (data?.payload) {
         const decodedSeller = decodePayload(data.payload);
 
-        // Clear any existing plain-text identifiers
-        localStorage.removeItem("sellerId");
-        localStorage.removeItem("sellerEmail");
-        localStorage.removeItem("sellerProfile");
-
         // Save new data in scrambled format for privacy in "Inspect" tool
-        secureSetItem("sellerId", decodedSeller.id);
-        secureSetItem("sellerEmail", decodedSeller.email);
-        secureSetItem("sellerProfile", JSON.stringify(decodedSeller));
+        const encrypt = (val) => btoa(String(val));
+
+        storage.setItem("sellerId", encrypt(decodedSeller.id));
+        storage.setItem("sellerEmail", encrypt(decodedSeller.email));
+        storage.setItem("sellerProfile", encrypt(JSON.stringify(decodedSeller)));
 
         // Trigger storage event for Navbar/Sidebar synchronization
         window.dispatchEvent(new Event("storage"));
@@ -123,6 +141,7 @@ const SellerLogin = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  style={{ borderRadius: '0', border: 'none', outline: 'none', height: '100%', width: '100%' }}
                 />
                 <button
                   type="button"

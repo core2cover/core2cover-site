@@ -16,13 +16,13 @@ export async function POST(request) {
   try {
     const { email, password } = await request.json();
 
-    const user = await prisma.user.findUnique({ 
-      where: { email: email.toLowerCase().trim() } 
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase().trim() }
     });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return NextResponse.json(
-        { message: "Invalid email or password" }, 
+        { message: "Invalid email or password" },
         { status: 401 }
       );
     }
@@ -50,7 +50,7 @@ export async function POST(request) {
   } catch (err) {
     console.error("Customer Login Error:", err);
     return NextResponse.json(
-      { message: "Internal Server Error" }, 
+      { message: "Internal Server Error" },
       { status: 500 }
     );
   }

@@ -4,8 +4,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
-import { FaEye, FaEyeSlash } from "react-icons/fa"; 
-import { customerLogin } from "../../api/auth"; 
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { customerLogin } from "../../api/auth";
 import "./Login.css";
 import LoadingSpinner from "../ui/LoadingSpinner";
 
@@ -20,13 +20,13 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter(); 
+  const router = useRouter();
   const { data: session, status } = useSession();
 
   /* =========================================
       EASY ENCRYPTION HELPERS
   ========================================= */
-  
+
   /**
    * Scrambles data before saving to Local Storage to prevent plain-text visibility.
    */
@@ -57,7 +57,7 @@ export default function Login() {
       secureSetItem("userEmail", session.user.email);
       secureSetItem("userName", session.user.name);
       secureSetItem("userId", session.user.id);
-      
+
       router.push("/userprofile");
     }
   }, [status, session, router]);
@@ -88,7 +88,7 @@ export default function Login() {
 
       // Save the JWT token normally for the interceptor to use
       if (data?.token) {
-        localStorage.setItem("token", data.token); 
+        localStorage.setItem("token", data.token);
       }
 
       // Handle the encrypted payload from the backend
@@ -101,9 +101,9 @@ export default function Login() {
         localStorage.removeItem("userName");
 
         // Save new data in scrambled format to hide it from "Inspect"
-        secureSetItem("userId", decodedUser.id); 
-        secureSetItem("userEmail", decodedUser.email); 
-        secureSetItem("userName", decodedUser.name); 
+        secureSetItem("userId", decodedUser.id);
+        secureSetItem("userEmail", decodedUser.email);
+        secureSetItem("userName", decodedUser.name);
       }
 
       router.push("/");
@@ -113,6 +113,15 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+  // Prevent hydration mismatch by only showing loading spinner after mount
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return null; // or return a skeleton that matches server output
 
   // Prevent flicker during session check
   if (status === "loading") return <LoadingSpinner message="Verifying session..." />;

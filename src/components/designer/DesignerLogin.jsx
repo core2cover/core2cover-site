@@ -13,6 +13,14 @@ const DesignerLogin = () => {
   const router = useRouter();
 
   const [form, setForm] = useState({ email: "", password: "" });
+
+  // 1. SESSION CHECK (Redirect if already logged in)
+  React.useEffect(() => {
+    const designerId = localStorage.getItem("designerId");
+    if (designerId) {
+      router.replace("/designerdashboard");
+    }
+  }, [router]);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -20,7 +28,7 @@ const DesignerLogin = () => {
   /* =========================================
       EASY ENCRYPTION HELPERS
   ========================================= */
-  
+
   /**
    * Scrambles data before saving to Local Storage to prevent plain-text visibility.
    */
@@ -58,18 +66,22 @@ const DesignerLogin = () => {
       });
 
       const data = res.data;
+      // Enforce persistent storage (localStorage) for automatic redirect support
+      const storage = localStorage;
 
       // Handle the encrypted payload from the backend
       if (data?.payload) {
         const decodedDesigner = decodePayload(data.payload);
 
         if (decodedDesigner?.id) {
-          // Clear any existing plain-text identifiers
+          // Clear any existing plain-text identifiers in both storages
           localStorage.removeItem("designerId");
+          sessionStorage.removeItem("designerId");
 
           // Save data in scrambled format for privacy in "Inspect" tool
-          secureSetItem("designerId", decodedDesigner.id);
-          
+          const encryptedId = btoa(String(decodedDesigner.id));
+          storage.setItem("designerId", encryptedId);
+
           router.push("/designerdashboard");
         } else {
           throw new Error("Invalid payload data");
@@ -130,6 +142,8 @@ const DesignerLogin = () => {
               </span>
             </div>
           </div>
+
+
 
           <button className="login-btn" type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Login"}

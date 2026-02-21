@@ -17,7 +17,7 @@ import Designer2 from "../../assets/images/Designer2.png";
 
 // Components
 import Footer from "./Footer";
-import Navbar from "./Navbar"; 
+import Navbar from "./Navbar";
 import LoadingSpinner from "../ui/LoadingSpinner"; // 1. IMPORT THE LOADING SPINNER
 import "./Home.css";
 
@@ -35,7 +35,7 @@ const Card = ({ images, title, onClick }) => {
         setFade(false);
       }, 300); // Duration of the fade effect
     }, 6500);
-    
+
     return () => clearInterval(interval);
   }, [images.length]);
 
@@ -62,12 +62,26 @@ const Home = () => {
   const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate initial loading for a smooth entrance
+    // Check for logged-in sessions (Seller / Designer) - Check both Local and Session storage
+    const sellerId = localStorage.getItem("sellerId") || sessionStorage.getItem("sellerId");
+    const designerId = localStorage.getItem("designerId") || sessionStorage.getItem("designerId");
+
+    if (sellerId) {
+      router.push("/sellerdashboard");
+      return;
+    }
+
+    if (designerId) {
+      router.push("/designerdashboard");
+      return;
+    }
+
+    // Simulate initial loading for a smooth entrance if no redirect happens
     const timer = setTimeout(() => {
       setPageLoading(false);
-    }, 800); 
+    }, 800);
     return () => clearTimeout(timer);
-  }, []);
+  }, [router]);
 
   return (
     <>
@@ -77,8 +91,8 @@ const Home = () => {
       {pageLoading && <LoadingSpinner message="Welcome to Core2Cover" />}
 
       {/* PAGE CONTENT */}
-      <div 
-        className={`partition-page ${!pageLoading ? "fade-in" : ""}`} 
+      <div
+        className={`partition-page ${!pageLoading ? "fade-in" : ""}`}
         style={{ visibility: pageLoading ? 'hidden' : 'visible' }}
       >
         <div className="partition-grid">
@@ -108,7 +122,7 @@ const Home = () => {
           />
         </div>
       </div>
-      
+
       <Footer />
     </>
   );

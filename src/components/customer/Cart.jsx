@@ -78,8 +78,10 @@ const Cart = () => {
 
     try {
       localStorage.setItem("casa_cart", btoa(JSON.stringify(formattedItems)));
-      clearSingleCheckoutItem(); 
-      router.push("/checkout");
+      clearSingleCheckoutItem();
+      console.log("Navigating to checkout...");
+      // Force navigation to ensure it works even if router context is acting up
+      window.location.href = "/checkout";
     } catch (err) {
       console.error("Failed to save cart for checkout", err);
     }

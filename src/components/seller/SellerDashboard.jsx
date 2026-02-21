@@ -25,7 +25,7 @@ const SellerDashboard = () => {
   ========================================= */
   const secureGetItem = (key) => {
     if (typeof window === "undefined") return null;
-    const item = localStorage.getItem(key);
+    const item = localStorage.getItem(key) || sessionStorage.getItem(key);
     try {
       return item ? atob(item) : null; // Decodes Base64 for internal use
     } catch (e) {
@@ -96,7 +96,7 @@ const SellerDashboard = () => {
           <div className="verification-icon-box">🛡️</div>
           <h2>Seller Verification Pending.</h2>
           <p>
-            Welcome to the Core2Cover merchant network! To maintain our premium standards, 
+            Welcome to the Core2Cover merchant network! To maintain our premium standards,
             your seller account is currently under review. It Might Take 24-48 hours.
           </p>
           <div className="verification-status-pill">
@@ -104,7 +104,7 @@ const SellerDashboard = () => {
             Status: Reviewing Documents
           </div>
           <p className="verification-subtext">
-            Our team is verifying your business details. You will be notified via email 
+            Our team is verifying your business details. You will be notified via email
             once you can start listing products and receiving orders.
           </p>
           <button className="gate-logout-btn" onClick={() => {
