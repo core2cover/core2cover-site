@@ -280,6 +280,7 @@ const SellerAddProduct = () => {
                       <option value="sheet">Sheets</option>
                       <option value="metre">Metres (m)</option>
                       <option value="litre">Litres (L)</option>
+                      <option value="kg">Kilograms (kg)</option>
                     </select>
                   </label>
 
