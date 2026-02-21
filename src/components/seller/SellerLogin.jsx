@@ -141,7 +141,6 @@ const SellerLogin = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  style={{ borderRadius: '0', border: 'none', outline: 'none', height: '100%', width: '100%' }}
                 />
                 <button
                   type="button"
