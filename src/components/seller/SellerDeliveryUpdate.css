@@ -4,7 +4,8 @@
 .ms-root {
   display: flex;
   min-height: 100vh;
-  background-color: var(--bg-main, #f8f9fa); /* Premium light grey background */
+  background-color: var(--bg-main, #f8f9fa);
+  /* Premium light grey background */
 }
 
 .delivery-container {
@@ -13,6 +14,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  margin-left: 25%;
   /* Sidebar offset handled by flex-row in .ms-root */
 }
 
@@ -30,8 +32,15 @@
 }
 
 @keyframes deliveryReveal {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .delivery-card h2 {
@@ -154,6 +163,7 @@
 @media (max-width: 1024px) {
   .delivery-container {
     padding: 30px;
+    margin-left: 25%;
   }
 }
 
@@ -164,11 +174,13 @@
 
   .delivery-container {
     padding: 20px;
+    margin-left: 25%;
   }
 
   .delivery-card {
     padding: 25px;
-    border-radius: 0; /* Full width on mobile */
+    border-radius: 0;
+    /* Full width on mobile */
   }
 
   .grid-2 {
@@ -179,26 +191,30 @@
 @media (max-width: 480px) {
   .delivery-container {
     padding-top: 100px;
+    margin-left: 0;
   }
 
   .delivery-card h2 {
     font-size: 22px;
   }
-  
+
   .input-group input,
   .input-group select {
-    padding: 14px; /* Larger tap target */
+    padding: 14px;
+    /* Larger tap target */
   }
 }
 
 .form-lock-section.locked {
-    opacity: 0.5;
-    pointer-events: none; /* Secondary safety measure */
-    filter: grayscale(0.5);
-    transition: all 0.3s ease;
+  opacity: 0.5;
+  pointer-events: none;
+  /* Secondary safety measure */
+  filter: grayscale(0.5);
+  transition: all 0.3s ease;
 }
 
-input:disabled, select:disabled {
-    background-color: #f9f9f9;
-    cursor: not-allowed;
+input:disabled,
+select:disabled {
+  background-color: #f9f9f9;
+  cursor: not-allowed;
 }

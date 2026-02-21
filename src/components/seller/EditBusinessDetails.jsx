@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import "./BusinessDetails.css";
+import "./EditBusinessDetails.css";
 import {
     getSellerBusinessDetails,
     updateSellerBusinessDetails,
@@ -128,7 +128,7 @@ const EditBusinessDetails = () => {
                 />
             )}
             <Sidebar />
-            <div className="business_container" >
+            <div className="business_container b-c" >
                 <div className="business-card business-reveal">
                     <h2>Edit Business Details</h2>
                     <p>Update your store information at Core2Cover</p>

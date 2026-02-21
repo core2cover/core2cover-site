@@ -41,6 +41,7 @@
   margin: auto;
   animation: slideUpFade 0.7s ease-out;
   margin-top: 0px;
+  margin-left: 30%;
 }
 
 @keyframes slideUpFade {
@@ -197,6 +198,7 @@
 
   .bs-profile-shell {
     max-width: 100%;
+    margin-left: 0;
   }
 
   .bs-btn--primary {
