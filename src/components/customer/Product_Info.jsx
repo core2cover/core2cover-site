@@ -12,6 +12,7 @@ import Image from "next/image";
 import { FaArrowLeft, FaShareAlt, FaTimes, FaPlay, FaPause, FaExpand, FaStore, FaTruckLoading } from "react-icons/fa";
 import MessageBox from "../ui/MessageBox";
 import LoadingSpinner from "../ui/LoadingSpinner";
+import { MdOutlineBrokenImage } from "react-icons/md";
 
 /* ---------------------------
     VideoPlayer — custom controls
@@ -363,7 +364,7 @@ const ProductInfo = () => {
                         {selectedMedia?.type === "video" ? (
                             <VideoPlayer src={selectedMedia.src} poster={images?.[0]} />
                         ) : (
-                            <ZoomableImage src={selectedMedia?.src || sample.src} alt={displayTitle} />
+                            <ZoomableImage src={selectedMedia?.src || <MdOutlineBrokenImage />} alt={displayTitle} />
                         )}
                     </div>
                     <div className="pd-thumbnails" style={{ marginTop: 14 }}>
@@ -526,7 +527,7 @@ const ProductInfo = () => {
                         {selectedMedia?.type === "video" ? (
                             <VideoPlayer src={selectedMedia.src} />
                         ) : (
-                            <ZoomableImage src={selectedMedia?.src || sample.src} alt={displayTitle} />
+                            <ZoomableImage src={selectedMedia?.src || <MdOutlineBrokenImage />} alt={displayTitle} />
                         )}
                     </div>
                 </div>
