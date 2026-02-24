@@ -124,6 +124,7 @@ const ProductCard = ({
             width={340}
             height={340}
             unoptimized={true}
+            loading="lazy"
           />
           <span className="product-badge">{category}</span>
 

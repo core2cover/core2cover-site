@@ -9,6 +9,24 @@ import "./ProductListing.css";
 import { FaArrowLeft, FaMapMarkerAlt, FaTrophy, FaLayerGroup } from "react-icons/fa";
 // 1. IMPORT THE LOADING SPINNER
 import LoadingSpinner from "../ui/LoadingSpinner";
+import { useInView } from "react-intersection-observer";
+
+const LazySection = ({ title, icon, list, renderFn }) => {
+  const { ref, inView } = useInView({
+    triggerOnce: true,
+    rootMargin: '200px 0px', // Loads slightly before the user reaches it
+  });
+
+  return (
+    <div ref={ref} style={{ minHeight: list.length > 0 ? '400px' : '0' }}>
+      {inView ? (
+        renderFn(title, icon, list)
+      ) : list.length > 0 ? (
+        <div className="section-placeholder">Loading {title}...</div>
+      ) : null}
+    </div>
+  );
+};
 
 const DesignersContent = () => {
   const [allDesigners, setAllDesigners] = useState([]);
@@ -23,7 +41,7 @@ const DesignersContent = () => {
       try {
         let url = `/api/designers`;
         if (query) url += `?search=${encodeURIComponent(query)}`;
-        
+
         const res = await fetch(url);
         const data = await res.json();
         setAllDesigners(Array.isArray(data) ? data : []);
@@ -51,7 +69,7 @@ const DesignersContent = () => {
     return (
       <div className="portfolio-section">
         <h2 style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-           {icon} {title}
+          {icon} {title}
         </h2>
         <div className="product-grid">
           {list.map((d) => (
@@ -101,9 +119,26 @@ const DesignersContent = () => {
       ) : (
         <>
           {renderSection("Designers Near You", <FaMapMarkerAlt />, categories.nearYou)}
-          {renderSection("Top Rated Experts", <FaTrophy />, categories.topRated)}
-          {renderSection("Experienced Professionals", <FaLayerGroup />, categories.experienced)}
-          {renderSection("Discover More", null, categories.others)}
+
+          {/* Lazy load remaining sections */}
+          <LazySection
+            title="Top Rated Experts"
+            icon={<FaTrophy />}
+            list={categories.topRated}
+            renderFn={renderSection}
+          />
+          <LazySection
+            title="Experienced Professionals"
+            icon={<FaLayerGroup />}
+            list={categories.experienced}
+            renderFn={renderSection}
+          />
+          <LazySection
+            title="Discover More"
+            icon={null}
+            list={categories.others}
+            renderFn={renderSection}
+          />
         </>
       )}
     </div>

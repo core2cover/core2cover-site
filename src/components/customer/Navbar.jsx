@@ -29,6 +29,7 @@ const Navbar = () => {
   const [profileOpen, setProfileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [localUser, setLocalUser] = useState(null);
+  const [mounted, setMounted] = useState(false);
 
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -36,14 +37,22 @@ const Navbar = () => {
 
   const profileRef = useRef(null);
   const searchRef = useRef(null);
-  
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
   const rawMaterialSuggestions = ["Plywood", "Plywood Near Me", "Laminates", "Laminates near me", "Paints near me", "Hardware", "Glass & Mirrors", "Glass & Mirrors Near Me", "Tiles", "Flooring", "Adhesives", "Electricals", "Plumbing", "Decorative Items"];
   const designerSuggestions = ["Interior Designer", "Kitchen Designer", "Product Designer", "Architect", "3D Visualizer"];
-  const readymadeSuggestions = ["Furniture","Lights","Lighting","Decor Items","Sofa", "Dining Table", "Beds", "Wardrobes", "Office Chairs", "Coffee Tables", "Curtains", "Chandeliers", "Carpets", "Study Tables", "Bookshelves"];
+  const readymadeSuggestions = ["Furniture", "Lights", "Lighting", "Decor Items", "Sofa", "Dining Table", "Beds", "Wardrobes", "Office Chairs", "Coffee Tables", "Curtains", "Chandeliers", "Carpets", "Study Tables", "Bookshelves"];
+
+  useEffect(() => {
+    setMounted(true);
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const secureGetItem = useCallback((key) => {
     if (typeof window === "undefined") return null;
@@ -51,7 +60,7 @@ const Navbar = () => {
     try {
       return item ? atob(item) : null;
     } catch (e) {
-      return item; 
+      return item;
     }
   }, []);
 
@@ -212,8 +221,15 @@ const Navbar = () => {
               <div className="profile-dropdown-container" ref={profileRef}>
                 <div className="nav-profile-trigger" onClick={handleProfileToggle}>
                   <div className="ico">
-                    {displayUser?.image ? (
-                      <Image src={displayUser.image} alt="User" className="nav-user-avatar" width={35} height={35} unoptimized />
+                    {mounted && displayUser?.image ? (
+                      <Image
+                        src={displayUser.image}
+                        alt="User"
+                        className="nav-user-avatar"
+                        width={35}
+                        height={35}
+                        unoptimized
+                      />
                     ) : (
                       <FaUserCircle className="info-icon-themed" />
                     )}
@@ -267,10 +283,10 @@ const Navbar = () => {
                           <p className="pop-email">Please login to manage your account</p>
                         </div>
                         <div className="popover-body">
-                           <Link href="/login" className="pop-item" onClick={() => setProfileOpen(false)}>
-                             <FaSignInAlt /> Login / Sign Up
-                           </Link>
-                           <Link href="/sellersignup" className="pop-item" onClick={() => setProfileOpen(false)}>
+                          <Link href="/login" className="pop-item" onClick={() => setProfileOpen(false)}>
+                            <FaSignInAlt /> Login / Sign Up
+                          </Link>
+                          <Link href="/sellersignup" className="pop-item" onClick={() => setProfileOpen(false)}>
                             <FaStore /> Become a Seller
                           </Link>
                           <Link href="/designersignup" className="pop-item" onClick={() => setProfileOpen(false)}>

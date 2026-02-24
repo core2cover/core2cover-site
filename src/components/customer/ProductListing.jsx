@@ -8,7 +8,8 @@ import "./ProductListing.css";
 import { useSearchParams, useRouter } from "next/navigation";
 import { FaArrowLeft, FaStar, FaRegClock, FaGem, FaLayerGroup } from "react-icons/fa";
 // 1. IMPORT THE LOADING SPINNER
-import LoadingSpinner from "../ui/LoadingSpinner"; 
+import LoadingSpinner from "../ui/LoadingSpinner";
+import { useInView } from "react-intersection-observer";
 
 const ProductListing = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -51,23 +52,23 @@ const ProductListing = () => {
       NEW CATEGORIZATION LOGIC
   ========================================= */
   const categorizedData = useMemo(() => {
-    const baseList = selectedCategory === "All" 
-      ? products 
+    const baseList = selectedCategory === "All"
+      ? products
       : products.filter(p => p.category === selectedCategory);
 
     return {
       // Products with rating >= 4.5
       topRated: baseList.filter(p => Number(p.avgRating) >= 4.5),
-      
+
       // Products priced above ₹15,000 (Luxury/High-end)
       premium: baseList.filter(p => Number(p.price) >= 15000),
-      
+
       // Sorted by ID or date to show latest additions
       newArrivals: [...baseList].sort((a, b) => b.id - a.id).slice(0, 4),
-      
+
       // The rest of the items
-      explore: baseList.filter(p => 
-        Number(p.avgRating) < 4.5 && 
+      explore: baseList.filter(p =>
+        Number(p.avgRating) < 4.5 &&
         Number(p.price) < 15000
       )
     };
@@ -77,16 +78,16 @@ const ProductListing = () => {
     if (list.length === 0) return null;
     return (
       <div className="portfolio-section" style={{ marginTop: '50px', textAlign: 'left' }}>
-        <h2 style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '15px', 
-          fontSize: '2rem', 
-          color: '#606E52', 
+        <h2 style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '15px',
+          fontSize: '2rem',
+          color: '#606E52',
           fontFamily: '"Playfair Display", serif',
           fontWeight: '500'
         }}>
-           {icon} {title}
+          {icon} {title}
         </h2>
         <div className="product-grid">
           {list.map((product) => (
@@ -98,6 +99,25 @@ const ProductListing = () => {
             />
           ))}
         </div>
+      </div>
+    );
+  };
+
+  const LazySection = ({ title, icon, list, renderFn }) => {
+    const { ref, inView } = useInView({
+      triggerOnce: true,
+      rootMargin: '200px 0px', // Start loading 200px before it enters the viewport
+    });
+
+    return (
+      <div ref={ref}>
+        {inView ? (
+          renderFn(title, icon, list)
+        ) : (
+          <div style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ccc' }}>
+            Loading section...
+          </div>
+        )}
       </div>
     );
   };
@@ -135,10 +155,30 @@ const ProductListing = () => {
           <div className="no-results">No items found in this category.</div>
         ) : !loading && (
           <>
+            {/* Render New Arrivals immediately as they are "above the fold" */}
             {renderSection("New Arrivals", <FaRegClock />, categorizedData.newArrivals)}
-            {renderSection("Top Rated Picks", <FaStar style={{color: '#facc15'}}/>, categorizedData.topRated)}
-            {renderSection("Premium Collection", <FaGem style={{color: '#91A56E'}}/>, categorizedData.premium)}
-            {renderSection("Explore More", <FaLayerGroup />, categorizedData.explore)}
+
+            {/* Lazy load the rest */}
+            <LazySection
+              title="Top Rated Picks"
+              icon={<FaStar style={{ color: '#facc15' }} />}
+              list={categorizedData.topRated}
+              renderFn={renderSection}
+            />
+
+            <LazySection
+              title="Premium Collection"
+              icon={<FaGem style={{ color: '#91A56E' }} />}
+              list={categorizedData.premium}
+              renderFn={renderSection}
+            />
+
+            <LazySection
+              title="Explore More"
+              icon={<FaLayerGroup />}
+              list={categorizedData.explore}
+              renderFn={renderSection}
+            />
           </>
         )}
       </section>

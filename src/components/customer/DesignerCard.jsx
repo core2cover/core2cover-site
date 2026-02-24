@@ -31,6 +31,7 @@ const DesignerCard = ({ id, name, category, image, avgRating, totalRatings, loca
             className="dc-image"
             fill
             unoptimized
+            loading="lazy"
           />
         ) : (
           <div className="dc-image dc-icon-fallback">
