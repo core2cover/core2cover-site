@@ -46,7 +46,7 @@ export async function GET(request, { params }) {
       conversionFactor: product.conversionFactor ?? 1,
       
       // FIX: Ensure seller is passed in a way the frontend can resolve
-      seller: product.seller?.name || "Verified Seller", 
+      seller: product.seller?.business?.businessName || product.seller?.name || "Verified Seller",
       
       installationAvailable: product.seller?.delivery?.installationAvailable ?? "no",
       installationCharge: product.seller?.delivery?.installationCharge ?? 0,

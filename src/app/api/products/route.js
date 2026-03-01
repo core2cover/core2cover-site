@@ -44,7 +44,7 @@ export async function GET(request) {
         images: p.images || [], 
         video: p.video || null, 
         sellerId: p.sellerId,
-        seller: p.seller?.name || "Verified Seller",
+        seller: p.seller?.business?.businessName || p.seller?.name || "Verified Seller",
         sellerBusiness: p.seller?.business || null,
         avgRating: Number(avgRating.toFixed(1)),
         ratingCount: count,

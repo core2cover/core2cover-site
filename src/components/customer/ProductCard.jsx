@@ -61,7 +61,7 @@ const ProductCard = ({
   };
 
   const coverImage = getValidSrc();
-  const resolvedSellerName = typeof seller === 'string' ? seller : seller?.name || "Verified Seller";
+  const resolvedSellerName = typeof seller === 'string' ? seller : "Verified Store";
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
