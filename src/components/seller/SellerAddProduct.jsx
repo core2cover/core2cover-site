@@ -107,7 +107,7 @@ const SellerAddProduct = () => {
 
   const productCategories = {
     finished: ["Bathroom Fittings", "Furniture", "Modular Kitchen", "Doors & Windows", "Wardrobes", "Lighting", "Wall Panels", "Decor Items"],
-    material: ["Plywood & Boards", "MDF / HDF", "Laminates & Veneers", "Hardware & Fittings", "Glass & Mirrors", "Marble & Stone","Tiles", "Fabrics & Upholstery", "Paints & Finishes"],
+    material: ["Plywood & Boards", "MDF / HDF", "Laminates & Veneers", "Hardware & Fittings", "Glass & Mirrors", "Marble & Stone", "Tiles", "Fabrics & Upholstery", "Paints & Finishes"],
   };
 
   const handleImages = (e) => {
@@ -124,8 +124,10 @@ const SellerAddProduct = () => {
     setVideoPreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => { // Removed 'async'
     e.preventDefault();
+
+    // 1. Validation (Immediate)
     if (!name.trim()) return triggerMsg("Product name is required.", "error");
     if (images.length < 1) return triggerMsg("Upload at least 1 image.", "error");
 
@@ -138,45 +140,49 @@ const SellerAddProduct = () => {
       }
     }
 
-    setSubmitting(true);
-    try {
-      const formData = new FormData();
-      formData.append("sellerId", sellerId);
-      formData.append("name", name);
-      formData.append("price", finalPrice);
-      formData.append("productType", productType);
-      formData.append("category", category);
-      formData.append("description", description);
-      formData.append("availability", availability);
+    // 2. Prepare Data
+    const formData = new FormData();
+    formData.append("sellerId", sellerId);
+    formData.append("name", name);
+    formData.append("price", finalPrice);
+    formData.append("productType", productType);
+    formData.append("category", category);
+    formData.append("description", description);
+    formData.append("availability", availability);
+    formData.append("unit", unit);
+    formData.append("unitsPerTrip", productType === "material" ? unitsPerTrip : 1);
+    formData.append("conversionFactor", productType === "material" ? (conversionFactor || 1) : 1);
+    images.forEach((img) => formData.append("images", img));
+    if (video) formData.append("video", video);
 
-      formData.append("unit", unit);
-      formData.append("unitsPerTrip", productType === "material" ? unitsPerTrip : 1);
-      formData.append("conversionFactor", productType === "material" ? (conversionFactor || 1) : 1);
+    // 3. OPTIMISTIC UI: Show success and reset form immediately
+    triggerMsg("Product is uploading in the background. You can safely add more items!", "success");
 
-      images.forEach((img) => formData.append("images", img));
-      if (video) formData.append("video", video);
+    // Reset all states immediately
+    setName("");
+    setPrice("");
+    setProductType("");
+    setCategory("");
+    setDescription("");
+    setImages([]);
+    setImagePreviews([]);
+    setVideo(null);
+    setVideoPreview(null);
+    setUnit("pcs");
+    setUnitsPerTrip("");
+    setConversionFactor("");
 
-      await addSellerProduct(formData);
-      triggerMsg("Product listed successfully!");
-
-      // Reset form
-      setName("");
-      setPrice("");
-      setProductType("");
-      setCategory("");
-      setDescription("");
-      setImages([]);
-      setImagePreviews([]);
-      setVideo(null);
-      setVideoPreview(null);
-      setUnit("pcs");
-      setUnitsPerTrip("");
-      setConversionFactor("");
-    } catch (err) {
-      triggerMsg("Server error while adding product", "error");
-    } finally {
-      setSubmitting(false);
-    }
+    // 4. BACKGROUND TASK
+    // We call the API but don't 'await' it. This lets the browser handle it in the background.
+    addSellerProduct(formData)
+      .then(() => {
+        console.log("✅ Background upload successful");
+      })
+      .catch((err) => {
+        console.error("❌ Background upload failed:", err);
+        // Silent error or a small toast if you want to notify failure later
+        triggerMsg("Previous upload failed. Please check your connection.", "error");
+      });
   };
 
   if (!mounted) return null;

@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import "./Product_Info.css";
-import sample from "../../assets/images/sample.jpg";
 import { addToCart } from "../../utils/cart";
 import api from "../../api/axios";
 import Image from "next/image";
@@ -90,100 +89,6 @@ function VideoPlayer({ src, poster }) {
 }
 
 /* ---------------------------
-    ZoomableImage — Pan & Move Logic
-    --------------------------- */
-function ZoomableImage({ src, alt, className }) {
-    const containerRef = useRef(null);
-    const [scale, setScale] = useState(1);
-    const [translate, setTranslate] = useState({ x: 0, y: 0 });
-    const lastPointer = useRef({ active: false, x: 0, y: 0 });
-
-    const transformStyle = {
-        transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
-        touchAction: "none",
-        cursor: scale > 1 ? "grab" : "auto",
-        willChange: "transform",
-        transition: lastPointer.current.active ? "none" : "transform 0.2s ease-out"
-    };
-
-    const clamp = (val, a, b) => Math.max(a, Math.min(b, val));
-
-    const getBounds = useCallback((s = scale) => {
-        const c = containerRef.current;
-        if (!c) return { maxX: 0, maxY: 0 };
-        return {
-            maxX: Math.max(0, (c.clientWidth * s - c.clientWidth) / 2),
-            maxY: Math.max(0, (c.clientHeight * s - c.clientHeight) / 2)
-        };
-    }, [scale]);
-
-    useEffect(() => {
-        const container = containerRef.current;
-        if (!container) return;
-
-        const onWheel = (e) => {
-            e.preventDefault();
-            const delta = e.deltaY < 0 ? 1.15 : 0.85;
-            setScale(prev => clamp(prev * delta, 1, 4));
-        };
-
-        const onPointerDown = (e) => {
-            if (scale <= 1) return;
-            container.setPointerCapture(e.pointerId);
-            lastPointer.current = { active: true, id: e.pointerId, x: e.clientX, y: e.clientY };
-        };
-
-        const onPointerMove = (e) => {
-            if (!lastPointer.current.active || lastPointer.current.id !== e.pointerId) return;
-            const dx = e.clientX - lastPointer.current.x;
-            const dy = e.clientY - lastPointer.current.y;
-            lastPointer.current.x = e.clientX;
-            lastPointer.current.y = e.clientY;
-
-            setTranslate(prev => {
-                const { maxX, maxY } = getBounds();
-                return {
-                    x: clamp(prev.x + dx, -maxX, maxX),
-                    y: clamp(prev.y + dy, -maxY, maxY)
-                };
-            });
-        };
-
-        const onPointerUp = (e) => {
-            lastPointer.current.active = false;
-            try { container.releasePointerCapture(e.pointerId); } catch { }
-        };
-
-        container.addEventListener("wheel", onWheel, { passive: false });
-        container.addEventListener("pointerdown", onPointerDown);
-        container.addEventListener("pointermove", onPointerMove);
-        container.addEventListener("pointerup", onPointerUp);
-
-        return () => {
-            container.removeEventListener("wheel", onWheel);
-            container.removeEventListener("pointerdown", onPointerDown);
-            container.removeEventListener("pointermove", onPointerMove);
-            container.removeEventListener("pointerup", onPointerUp);
-        };
-    }, [getBounds, scale]);
-
-    return (
-        <div
-            ref={containerRef}
-            className={className || "zoomable-img-container"}
-            style={{ width: "100%", height: "100%", overflow: "hidden", position: "relative", touchAction: "none", background: "#f8f8f6" }}
-        >
-            <img
-                src={src}
-                alt={alt || "Product"}
-                draggable={false}
-                style={{ width: "100%", height: "100%", objectFit: "contain", display: "block", userSelect: "none", ...transformStyle }}
-            />
-        </div>
-    );
-}
-
-/* ---------------------------
     Main ProductInfo
     --------------------------- */
 const ProductInfo = () => {
@@ -200,9 +105,77 @@ const ProductInfo = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [msg, setMsg] = useState({ text: "", type: "success", show: false });
 
+    // --- ZOOM & PAN STATES (Exact logic from DesignerInfo) ---
+    const [zoomLevel, setZoomLevel] = useState(1);
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+    const touchStartDist = useRef(0);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        setIsMobile('ontouchstart' in window || navigator.maxTouchPoints > 0);
+    }, []);
+
     const triggerMsg = (text, type = "success") => setMsg({ text, type, show: true });
+
+    // --- LIGHTBOX ZOOM LOGIC (Exact logic from DesignerInfo) ---
+    const handleWheel = useCallback((e) => {
+        e.preventDefault();
+        const delta = e.deltaY * -0.002;
+        setZoomLevel(prev => {
+            const nextZoom = Math.min(Math.max(prev + delta, 1), 5);
+            if (nextZoom === 1) setPosition({ x: 0, y: 0 });
+            return nextZoom;
+        });
+    }, []);
+
+    const handleMouseDown = (e) => {
+        if (zoomLevel <= 1) return;
+        setIsDragging(true);
+        setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDragging || zoomLevel <= 1) return;
+        setPosition({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+    };
+
+    const handleMouseUp = () => setIsDragging(false);
+
+    const handleTouchStart = (e) => {
+        if (e.touches.length === 1) {
+            setIsDragging(true);
+            setDragStart({ x: e.touches[0].clientX - position.x, y: e.touches[0].clientY - position.y });
+        } else if (e.touches.length === 2) {
+            touchStartDist.current = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+        }
+    };
+
+    const handleTouchMove = (e) => {
+        if (e.touches.length === 1 && isDragging && zoomLevel > 1) {
+            setPosition({ x: e.touches[0].clientX - dragStart.x, y: e.touches[0].clientY - dragStart.y });
+        } else if (e.touches.length === 2) {
+            const dist = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            const delta = (dist - touchStartDist.current) * 0.01;
+            setZoomLevel(prev => Math.min(Math.max(prev + delta, 1), 5));
+            touchStartDist.current = dist;
+        }
+    };
+
     const openFullscreen = () => setIsFullscreen(true);
-    const closeFullscreen = () => setIsFullscreen(false);
+    
+    const closeFullscreen = () => {
+        setIsFullscreen(false);
+        setZoomLevel(1);
+        setPosition({ x: 0, y: 0 });
+    };
 
     const decodePayload = (payload) => {
         try { return JSON.parse(atob(payload)); } catch (e) { return null; }
@@ -227,8 +200,6 @@ const ProductInfo = () => {
 
     const mediaList = useMemo(() => {
         const list = [];
-
-        // Process Images
         if (images && Array.isArray(images)) {
             images.forEach((img) => {
                 let src = img.startsWith("http") ? img : `/${img}`;
@@ -238,17 +209,13 @@ const ProductInfo = () => {
                 list.push({ type: "image", src });
             });
         }
-
-        // Process Video - Logic specifically for Cloudinary/Direct URLs
         if (video && typeof video === "string" && video.trim() !== "") {
             let vSrc = video.startsWith("http") ? video : `/${video}`;
             list.push({ type: "video", src: vSrc });
         }
-
         return list;
     }, [images, video]);
 
-    // Ensure the first item (image or video) is selected on load
     useEffect(() => {
         if (mediaList.length > 0 && !selectedMedia) {
             setSelectedMedia(mediaList[0]);
@@ -320,27 +287,11 @@ const ProductInfo = () => {
     };
 
     const handleShare = async () => {
-        const shareData = {
-            title: displayTitle,
-            text: `Check out ${displayTitle} on Core2Cover!`,
-            url: window.location.href,
-        };
-
+        const shareData = { title: displayTitle, text: `Check out ${displayTitle} on Core2Cover!`, url: window.location.href };
         try {
-            // Check if the browser supports the native share menu
-            if (navigator.share) {
-                await navigator.share(shareData);
-            } else {
-                // Fallback: Copy to clipboard
-                await navigator.clipboard.writeText(window.location.href);
-                triggerMsg("Link copied to clipboard!", "success");
-            }
-        } catch (err) {
-            // Handle case where user cancels the share
-            if (err.name !== "AbortError") {
-                triggerMsg("Sharing failed", "error");
-            }
-        }
+            if (navigator.share) { await navigator.share(shareData); } 
+            else { await navigator.clipboard.writeText(window.location.href); triggerMsg("Link copied to clipboard!", "success"); }
+        } catch (err) { if (err.name !== "AbortError") triggerMsg("Sharing failed", "error"); }
     };
 
     if (loading) return <LoadingSpinner message="Loading Product..." />;
@@ -360,12 +311,21 @@ const ProductInfo = () => {
                 </div>
 
                 <div className="pd-left">
-                    <div className="pd-image-box" onClick={openFullscreen} style={{ position: "relative", height: 420 }}>
+                    <div className="pd-image-box" onClick={openFullscreen} style={{ position: "relative", height: 420, cursor: 'zoom-in' }}>
                         {selectedMedia?.type === "video" ? (
                             <VideoPlayer src={selectedMedia.src} poster={images?.[0]} />
                         ) : (
-                            <ZoomableImage src={selectedMedia?.src || <MdOutlineBrokenImage />} alt={displayTitle} />
+                            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                <Image 
+                                    src={selectedMedia?.src} 
+                                    alt={displayTitle} 
+                                    fill 
+                                    style={{ objectFit: 'contain' }} 
+                                    unoptimized 
+                                />
+                            </div>
                         )}
+                        <div className="zoom-hint-aesthetic"><FaExpand /> Click to View Fullscreen</div>
                     </div>
                     <div className="pd-thumbnails" style={{ marginTop: 14 }}>
                         {mediaList.map((m, i) => (
@@ -374,55 +334,28 @@ const ProductInfo = () => {
                                 className={`pd-thumb-container ${selectedMedia?.src === m.src ? "active-thumb" : ""}`}
                                 onClick={() => setSelectedMedia(m)}
                                 style={{
-                                    width: 80,
-                                    height: 80,
-                                    borderRadius: 8,
-                                    overflow: "hidden",
+                                    width: 80, height: 80, borderRadius: 8, overflow: "hidden",
                                     border: selectedMedia?.src === m.src ? "2px solid #4e5a44" : "1px solid #ddd",
-                                    marginRight: 10,
-                                    display: "inline-block",
-                                    cursor: "pointer",
-                                    background: "#000" // Fallback background
+                                    marginRight: 10, display: "inline-block", cursor: "pointer", background: "#000"
                                 }}
                             >
                                 {m.type === "video" ? (
                                     <div style={{ width: "100%", height: "100%", position: 'relative', display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                        {/* Use the first image as a poster, or a grey fallback if no images exist */}
                                         {images && images.length > 0 ? (
                                             <Image
-                                                src={images[0].includes("cloudinary.com")
-                                                    ? images[0].replace("/upload/", "/upload/w_200,h_200,c_thumb,g_auto,q_auto,f_auto/")
-                                                    : images[0]
-                                                }
-                                                fill
-                                                unoptimized
-                                                style={{ objectFit: 'cover', opacity: 0.6 }}
-                                                alt="video-thumbnail"
+                                                src={images[0].includes("cloudinary.com") ? images[0].replace("/upload/", "/upload/w_200,h_200,c_thumb,g_auto,q_auto,f_auto/") : images[0]}
+                                                fill unoptimized style={{ objectFit: 'cover', opacity: 0.6 }} alt="video-thumbnail"
                                             />
                                         ) : (
                                             <div style={{ width: '100%', height: '100%', background: '#333' }} />
                                         )}
-                                        {/* The Play Icon Overlay */}
-                                        <div style={{
-                                            position: 'absolute',
-                                            zIndex: 2,
-                                            background: 'rgba(0,0,0,0.4)',
-                                            borderRadius: '50%',
-                                            padding: '8px',
-                                            display: 'flex'
-                                        }}>
+                                        <div style={{ position: 'absolute', zIndex: 2, background: 'rgba(0,0,0,0.4)', borderRadius: '50%', padding: '8px', display: 'flex' }}>
                                             <FaPlay style={{ color: '#fff', fontSize: '16px' }} />
                                         </div>
                                     </div>
                                 ) : (
                                     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                                        <Image
-                                            src={m.src}
-                                            alt="product-thumb"
-                                            fill
-                                            unoptimized
-                                            style={{ objectFit: "cover" }}
-                                        />
+                                        <Image src={m.src} alt="product-thumb" fill unoptimized style={{ objectFit: "cover" }} />
                                     </div>
                                 )}
                             </div>
@@ -520,14 +453,43 @@ const ProductInfo = () => {
                 </div>
             </section>
 
+            {/* FULLSCREEN LIGHTBOX - WITH EXACT DESIGNER INFO LOGIC */}
             {isFullscreen && (
-                <div className="pd-fullscreen-overlay" style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(0,0,0,0.95)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <button className="pd-fullscreen-close" onClick={closeFullscreen} style={{ position: "absolute", top: 20, right: 20, zIndex: 10010, background: "transparent", color: "#fff", border: "none", fontSize: 22, cursor: 'pointer' }}><FaTimes /></button>
-                    <div style={{ width: "92%", height: "92%", position: "relative" }}>
+                <div className="pd-fullscreen-overlay" onWheel={handleWheel} onClick={closeFullscreen}>
+                    <button className="pd-fullscreen-close" onClick={closeFullscreen}><FaTimes /></button>
+                    <span className="lightbox-controls-aesthetic">
+                        {isMobile ? "Pinch to Zoom • Swipe to Move" : "Scroll to Zoom • Drag to Move"}
+                    </span>
+                    <div 
+                        className="pd-fullscreen-content" 
+                        onClick={(e) => e.stopPropagation()}
+                        onMouseMove={handleMouseMove}
+                        onMouseUp={handleMouseUp}
+                        onTouchStart={handleTouchStart}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={() => setIsDragging(false)}
+                    >
                         {selectedMedia?.type === "video" ? (
-                            <VideoPlayer src={selectedMedia.src} />
+                            <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <video src={selectedMedia.src} controls autoPlay style={{ maxWidth: "95%", maxHeight: "90vh" }} />
+                            </div>
                         ) : (
-                            <ZoomableImage src={selectedMedia?.src || <MdOutlineBrokenImage />} alt={displayTitle} />
+                            <img
+                                src={selectedMedia?.src}
+                                alt="Fullscreen"
+                                onMouseDown={handleMouseDown}
+                                draggable="false"
+                                style={{
+                                    transform: `translate(${position.x}px, ${position.y}px) scale(${zoomLevel})`,
+                                    transition: isDragging ? 'none' : 'transform 0.15s ease-out',
+                                    cursor: zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
+                                    touchAction: 'none',
+                                    maxWidth: "95%",
+                                    maxHeight: "90vh",
+                                    objectFit: "contain",
+                                    userSelect: "none"
+                                }}
+                            />
                         )}
                     </div>
                 </div>
