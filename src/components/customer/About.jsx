@@ -5,7 +5,7 @@ import Link from "next/link";
 import "./About.css";
 import CoreToCoverLogo from "../../assets/logo/CoreToCover_3.png";
 import CoreToCoverTitle from "../../assets/logo/CoreToCover_1.png";
-import Om from "../../assets/founders/om.jpg";
+import Om from "../../assets/founders/om.jpeg";
 import Soham from "../../assets/founders/soham.jpeg";
 import Prathmesh from "../../assets/founders/Prathmesh.jpeg"
 import Om_Mali from "../../assets/founders/om_mail.jpeg"

@@ -62,19 +62,6 @@ const Home = () => {
   const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
-    // Check for logged-in sessions (Seller / Designer) - Check both Local and Session storage
-    const sellerId = localStorage.getItem("sellerId") || sessionStorage.getItem("sellerId");
-    const designerId = localStorage.getItem("designerId") || sessionStorage.getItem("designerId");
-
-    if (sellerId) {
-      router.push("/sellerdashboard");
-      return;
-    }
-
-    if (designerId) {
-      router.push("/designerdashboard");
-      return;
-    }
 
     // Simulate initial loading for a smooth entrance if no redirect happens
     const timer = setTimeout(() => {
