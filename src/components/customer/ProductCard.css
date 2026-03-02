@@ -214,6 +214,7 @@
     aspect-ratio: auto;
     width: 140px;
     height: 100%;
+    background: rgb(219, 219, 219);
   }
 
   .product-image {
@@ -221,7 +222,6 @@
     height: 100%;
     /* 'contain' is better for hardware/faucets to ensure they aren't cut off */
     object-fit: contain; 
-    padding: 8px;
   }
 
   .product-info {

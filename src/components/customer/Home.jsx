@@ -1,112 +1,171 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-
-// Assets
-import Sofa from "../../assets/images/Sofa.jpeg";
-import Lamp from "../../assets/images/Lamp.jpg";
-import Bathroom from "../../assets/images/Bathroom.webp";
-import Raw from "../../assets/images/Raw1.png";
-import Raw2 from "../../assets/images/Raw2.png";
-import Raw3 from "../../assets/images/Raw3.png";
-import Designer1 from "../../assets/images/Designer1.png";
-import Designer2 from "../../assets/images/Designer2.png";
 
 // Components
 import Footer from "./Footer";
 import Navbar from "./Navbar";
-import LoadingSpinner from "../ui/LoadingSpinner"; // 1. IMPORT THE LOADING SPINNER
+import ProductCard from "./ProductCard";
+import DesignerCard from "./DesignerCard";
+import LoadingSpinner from "../ui/LoadingSpinner";
+import { FaArrowRight, FaBoxOpen, FaLayerGroup, FaUserTie } from "react-icons/fa";
 import "./Home.css";
 
-// SLIDESHOW CARD COMPONENT
-const Card = ({ images, title, onClick }) => {
-  const [index, setIndex] = useState(0);
-  const [fade, setFade] = useState(false);
-
-  useEffect(() => {
-    // INCREASED TIME: Changed from 2500 to 4500 (4.5 seconds)
-    const interval = setInterval(() => {
-      setFade(true);
-      setTimeout(() => {
-        setIndex((prev) => (prev + 1) % images.length);
-        setFade(false);
-      }, 300); // Duration of the fade effect
-    }, 6500);
-
-    return () => clearInterval(interval);
-  }, [images.length]);
-
-  return (
-    <div className="partition-card-vertical" onClick={onClick}>
-      <div className="partition-img-box">
-        <Image
-          src={typeof images[index] === 'string' ? images[index] : images[index].src}
-          alt={title}
-          className={`slideshow-img ${fade ? "fade-out" : "fade-in"}`}
-          fill
-          style={{ objectFit: 'cover' }}
-        />
-      </div>
-      <h2 className="partition-title-under">{title}</h2>
-    </div>
-  );
-};
-
-// MAIN HOME COMPONENT
 const Home = () => {
   const router = useRouter();
-  // 2. ADD LOADING STATE
   const [pageLoading, setPageLoading] = useState(true);
+  
+  // Filter State: "All", "Finished", "Materials", "Designers"
+  const [activeFilter, setActiveFilter] = useState("All");
+
+  // Data States
+  const [finishedProducts, setFinishedProducts] = useState([]);
+  const [rawMaterials, setRawMaterials] = useState([]);
+  const [designers, setDesigners] = useState([]);
+
+  // Section Refs for Scrolling
+  const finishedRef = useRef(null);
+  const rawRef = useRef(null);
+  const designersRef = useRef(null);
+
+  const scrollToSection = (ref) => {
+    // Small timeout to allow the DOM to render if a section was previously hidden by filter
+    setTimeout(() => {
+      ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  };
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [finishedRes, rawRes, designersRes] = await Promise.all([
+          fetch(`/api/products?type=finished`),
+          fetch(`/api/products?type=material`),
+          fetch(`/api/designers`)
+        ]);
 
-    // Simulate initial loading for a smooth entrance if no redirect happens
-    const timer = setTimeout(() => {
-      setPageLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, [router]);
+        const finishedData = await finishedRes.json();
+        const rawData = await rawRes.json();
+        const designersData = await designersRes.json();
+
+        setFinishedProducts(Array.isArray(finishedData) ? finishedData.slice(0, 4) : []);
+        setRawMaterials(Array.isArray(rawData) ? rawData.slice(0, 4) : []);
+        setDesigners(Array.isArray(designersData) ? designersData.slice(0, 4) : []);
+      } catch (err) {
+        console.error("Home Data Fetch Error:", err);
+      } finally {
+        setPageLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (pageLoading) return <LoadingSpinner message="Welcome to Core2Cover" />;
+
+  // Filter Visibility Logic
+  const showFinished = activeFilter === "All" || activeFilter === "Finished";
+  const showMaterials = activeFilter === "All" || activeFilter === "Materials";
+  const showDesigners = activeFilter === "All" || activeFilter === "Designers";
 
   return (
     <>
       <Navbar />
 
-      {/* 3. APPLY THE LOADING SPINNER */}
-      {pageLoading && <LoadingSpinner message="Welcome to Core2Cover" />}
+      <div className="partition-page fade-in">
+        
+        {/* PILL FILTER SECTION */}
+        <div className="filter-button-group">
+          <button 
+            className={`filter-pill ${activeFilter === "All" ? "active" : ""}`}
+            onClick={() => setActiveFilter("All")}
+          >
+            All
+          </button>
+          <button 
+            className={`filter-pill ${activeFilter === "Finished" ? "active" : ""}`}
+            onClick={() => { setActiveFilter("Finished"); scrollToSection(finishedRef); }}
+          >
+            Furniture & Products
+          </button>
+          <button 
+            className={`filter-pill ${activeFilter === "Materials" ? "active" : ""}`}
+            onClick={() => { setActiveFilter("Materials"); scrollToSection(rawRef); }}
+          >
+            Raw Materials
+          </button>
+          <button 
+            className={`filter-pill ${activeFilter === "Designers" ? "active" : ""}`}
+            onClick={() => { setActiveFilter("Designers"); scrollToSection(designersRef); }}
+          >
+            Designers
+          </button>
+        </div>
 
-      {/* PAGE CONTENT */}
-      <div
-        className={`partition-page ${!pageLoading ? "fade-in" : ""}`}
-        style={{ visibility: pageLoading ? 'hidden' : 'visible' }}
-      >
-        <div className="partition-grid">
-          {/* Card 1 */}
-          <Card
-            title="Finished Products"
-            images={[Sofa, Lamp, Bathroom]}
-            onClick={() => router.push("/productlisting?page=Finished%20Products&desc=Find%20the%20perfect%20product%20that%20enhances%20your%20quality%20of%20living.")}
-          />
+        {/* DATA PREVIEW SECTIONS */}
+        <div className="home-preview-container">
 
-          {/* Card 2 */}
-          <Card
-            title="Raw Materials"
-            images={[Raw, Raw2, Raw3]}
-            onClick={() => router.push("/productlisting?page=Raw%20Materials&desc=Build%20better%20with%20high-grade%20interior%20raw%20materials.")}
-          />
+          {/* Finished Products Section */}
+          {showFinished && (
+            <section ref={finishedRef} className="preview-section fade-in">
+              <div className="section-header">
+                <h2><FaBoxOpen /> Finished Products</h2>
+                <button onClick={() => router.push("/productlisting?page=Finished%20Products")}>
+                  View All <FaArrowRight />
+                </button>
+              </div>
+              <div className="product-grid">
+                {finishedProducts.map(p => (
+                  <ProductCard 
+                    key={p.id} 
+                    {...p} 
+                    title={p.name} 
+                    origin={p.sellerBusiness ? `${p.sellerBusiness.city}` : "India"} 
+                  />
+                ))}
+              </div>
+            </section>
+          )}
 
-          {/* Card 3 */}
-          <Card
-            title="Interior & Product Designers"
-            images={[
-              Designer1,
-              Designer2,
-              "https://images.pexels.com/photos/6474344/pexels-photo-6474344.jpeg?auto=compress&cs=tinysrgb&w=800",
-            ]}
-            onClick={() => router.push("/designers")}
-          />
+          {/* Raw Materials Section */}
+          {showMaterials && (
+            <section ref={rawRef} className="preview-section fade-in">
+              <div className="section-header">
+                <h2><FaLayerGroup /> Essential Raw Materials</h2>
+                <button onClick={() => router.push("/productlisting?page=Raw%20Materials")}>
+                  View All <FaArrowRight />
+                </button>
+              </div>
+              <div className="product-grid">
+                {rawMaterials.map(p => (
+                  <ProductCard 
+                    key={p.id} 
+                    {...p} 
+                    title={p.name} 
+                    origin={p.sellerBusiness ? `${p.sellerBusiness.city}` : "India"} 
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Designers Section */}
+          {showDesigners && (
+            <section ref={designersRef} className="preview-section fade-in">
+              <div className="section-header">
+                <h2><FaUserTie /> Top-Tier Designers</h2>
+                <button onClick={() => router.push("/designers")}>
+                  Meet All <FaArrowRight />
+                </button>
+              </div>
+              <div className="product-grid">
+                {designers.map(d => (
+                  <DesignerCard key={d.id} {...d} />
+                ))}
+              </div>
+            </section>
+          )}
+
         </div>
       </div>
 
