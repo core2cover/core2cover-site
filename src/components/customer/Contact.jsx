@@ -108,7 +108,7 @@ const Contact = () => {
                             </button>
                         </form>
                         
-                        <a href="tel:+919322611145">
+                        <a href="tel:+918275922422">
                             <button className="pd-btn pd_btn_call">📞 Call Us</button>
                         </a>
                     </div>

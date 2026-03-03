@@ -14,7 +14,8 @@ import {
   FaUserCircle,
   FaUserGraduate,
   FaTimes,
-  FaSignInAlt // Added for Login icon
+  FaSignInAlt,
+  FaTools 
 } from "react-icons/fa";
 import { IoMdInformationCircle } from "react-icons/io";
 import "./Navbar.css";
@@ -42,9 +43,12 @@ const Navbar = () => {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
-  const rawMaterialSuggestions = ["Plywood", "Plywood Near Me", "Laminates", "Laminates near me", "Paints near me", "Hardware", "Glass & Mirrors", "Glass & Mirrors Near Me", "Tiles", "Flooring", "Adhesives", "Electricals", "Plumbing", "Decorative Items"];
+  const rawMaterialSuggestions = ["Plywood", "Laminates", "Paints", "Hardware", "Glass & Mirrors", "Tiles", "Flooring", "Adhesives", "Electricals", "Plumbing"];
   const designerSuggestions = ["Interior Designer", "Kitchen Designer", "Product Designer", "Architect", "3D Visualizer"];
-  const readymadeSuggestions = ["Furniture", "Lights", "Lighting", "Decor Items", "Sofa", "Dining Table", "Beds", "Wardrobes", "Office Chairs", "Coffee Tables", "Curtains", "Chandeliers", "Carpets", "Study Tables", "Bookshelves"];
+  const readymadeSuggestions = ["Furniture", "Lights", "Lighting", "Decor Items", "Sofa", "Dining Table", "Beds", "Wardrobes", "Office Chairs"];
+  
+  // NEW: Worker Suggestions
+  const workerSuggestions = ["Plumber", "Plumbing", "Plumbing Workers", "Carpenter", "Electrician", "Construction Worker", "Painter"];
 
   useEffect(() => {
     setMounted(true);
@@ -89,14 +93,13 @@ const Navbar = () => {
   const isShippingPage = pathname === "/shipping-policy";
   const isPrivacyPage = pathname === "/privacy";
 
-  const currentPageTitle = isDesignerSection ? "Professional Designers" : isRawMaterialsPage ? "Raw Materials" : "Readymade Products";
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const currentPageTitle = isDesignerSection 
+    ? "Professional Designers" 
+    : isRawMaterialsPage 
+    ? "Raw Materials" 
+    : isHomePage 
+    ? "Products or Workers" 
+    : "Readymade Products";
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -121,6 +124,8 @@ const Navbar = () => {
         pool = designerSuggestions;
       } else if (isRawMaterialsPage) {
         pool = rawMaterialSuggestions;
+      } else if (isHomePage) {
+        pool = [...readymadeSuggestions, ...workerSuggestions, ...rawMaterialSuggestions];
       } else {
         pool = readymadeSuggestions;
       }
@@ -128,7 +133,7 @@ const Navbar = () => {
       const filtered = pool.filter(item =>
         item.toLowerCase().includes(value.toLowerCase())
       );
-      setSuggestions(filtered);
+      setSuggestions([...new Set(filtered)].slice(0, 8));
       setShowSuggestions(true);
     } else {
       setShowSuggestions(false);
@@ -137,18 +142,22 @@ const Navbar = () => {
 
   const performSearch = (query) => {
     const lowerQuery = query.toLowerCase();
-    const hasNearMe = lowerQuery.includes("near me");
+    
+    // Logic to detect if searching for a worker
+    const isWorkerQuery = workerSuggestions.some(w => lowerQuery.includes(w.toLowerCase()));
 
-    if (hasNearMe && isRawMaterialsPage) {
+    if (isWorkerQuery) {
+      router.push(`/searchresults?search=${encodeURIComponent(query)}&type=worker`);
+    } else if (lowerQuery.includes("near me") && (isRawMaterialsPage || isHomePage)) {
       const cleanQuery = lowerQuery.replace("near me", "").trim();
       if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const { latitude, longitude } = position.coords;
-            router.push(`/searchresults?search=${encodeURIComponent(cleanQuery)}&lat=${latitude}&lng=${longitude}&nearby=true&page=Raw%20Materials`);
+            router.push(`/searchresults?search=${encodeURIComponent(cleanQuery)}&lat=${latitude}&lng=${longitude}&nearby=true`);
           },
-          (error) => {
-            router.push(`/searchresults?search=${encodeURIComponent(query)}&page=Raw%20Materials`);
+          () => {
+            router.push(`/searchresults?search=${encodeURIComponent(query)}`);
           }
         );
       }
@@ -169,10 +178,7 @@ const Navbar = () => {
     if (searchValue.trim()) performSearch(searchValue);
   };
 
-  /* CHANGED: Always toggle instead of redirecting */
-  const handleProfileToggle = () => {
-    setProfileOpen(!profileOpen);
-  };
+  const handleProfileToggle = () => setProfileOpen(!profileOpen);
 
   const handleSignOut = async () => {
     localStorage.clear();
@@ -201,14 +207,12 @@ const Navbar = () => {
                   <span className="nav-icon-link">About</span>
                 </div>
               </Link>
-
               <Link href="/designers" className="nav-link-wrapper">
                 <div className="ico">
                   <FaUserGraduate className="info-icon-themed" />
                   <span className="nav-icon-link">Designers</span>
                 </div>
               </Link>
-
               {!isMobile && (
                 <Link href="/cart" className="nav-link-wrapper">
                   <div className="ico">
@@ -217,81 +221,45 @@ const Navbar = () => {
                   </div>
                 </Link>
               )}
-
               <div className="profile-dropdown-container" ref={profileRef}>
                 <div className="nav-profile-trigger" onClick={handleProfileToggle}>
                   <div className="ico">
                     {mounted && displayUser?.image ? (
-                      <Image
-                        src={displayUser.image}
-                        alt="User"
-                        className="nav-user-avatar"
-                        width={35}
-                        height={35}
-                        unoptimized
-                      />
+                      <Image src={displayUser.image} alt="User" className="nav-user-avatar" width={35} height={35} unoptimized />
                     ) : (
                       <FaUserCircle className="info-icon-themed" />
                     )}
                   </div>
                 </div>
-
                 {profileOpen && (
                   <div className="profile-popover shadow-reveal">
-                    <button
-                      className="pop-close-btn"
-                      onClick={() => setProfileOpen(false)}
-                      aria-label="Close profile menu"
-                    >
-                      <FaTimes />
-                    </button>
-
+                    <button className="pop-close-btn" onClick={() => setProfileOpen(false)}><FaTimes /></button>
                     {isUserAuthenticated ? (
-                      /* LOGGED IN VIEW */
                       <>
                         <div className="popover-header">
                           <p className="pop-name">{displayUser?.name || "User"}</p>
                           <p className="pop-email">{displayUser?.email}</p>
                         </div>
                         <div className="popover-body">
-                          <Link href="/userprofile" className="pop-item" onClick={() => setProfileOpen(false)}>
-                            <FaUserCircle /> My Account
-                          </Link>
-                          {isMobile && (
-                            <Link href="/cart" className="pop-item" onClick={() => setProfileOpen(false)}>
-                              <FaShoppingCart /> My Cart
-                            </Link>
-                          )}
-                          <Link href="/sellersignup" className="pop-item" onClick={() => setProfileOpen(false)}>
-                            <FaStore /> Become a Seller
-                          </Link>
-                          <Link href="/designersignup" className="pop-item" onClick={() => setProfileOpen(false)}>
-                            <FaPalette /> I am a Designer
-                          </Link>
+                          <Link href="/userprofile" className="pop-item" onClick={() => setProfileOpen(false)}><FaUserCircle /> My Account</Link>
+                          {isMobile && <Link href="/cart" className="pop-item" onClick={() => setProfileOpen(false)}><FaShoppingCart /> My Cart</Link>}
+                          <Link href="/sellersignup" className="pop-item" onClick={() => setProfileOpen(false)}><FaStore /> Become a Seller</Link>
+                          <Link href="/designersignup" className="pop-item" onClick={() => setProfileOpen(false)}><FaPalette /> I am a Designer</Link>
                         </div>
                         <div className="popover-footer">
-                          <button className="pop-signout" onClick={handleSignOut}>
-                            SignOut <FaSignOutAlt />
-                          </button>
+                          <button className="pop-signout" onClick={handleSignOut}>SignOut <FaSignOutAlt /></button>
                         </div>
                       </>
                     ) : (
-                      /* NOT LOGGED IN VIEW */
                       <>
                         <div className="popover-header">
                           <p className="pop-name">Welcome Guest</p>
                           <p className="pop-email">Please login to manage your account</p>
                         </div>
                         <div className="popover-body">
-                          <Link href="/login" className="pop-item" onClick={() => setProfileOpen(false)}>
-                            <FaSignInAlt /> Login / Sign Up
-                          </Link>
-                          <Link href="/sellersignup" className="pop-item" onClick={() => setProfileOpen(false)}>
-                            <FaStore /> Become a Seller
-                          </Link>
-                          <Link href="/designersignup" className="pop-item" onClick={() => setProfileOpen(false)}>
-                            <FaPalette /> I am a Designer
-                          </Link>
+                          <Link href="/login" className="pop-item" onClick={() => setProfileOpen(false)}><FaSignInAlt /> Login / Sign Up</Link>
+                          <Link href="/sellersignup" className="pop-item" onClick={() => setProfileOpen(false)}><FaStore /> Become a Seller</Link>
+                          <Link href="/designersignup" className="pop-item" onClick={() => setProfileOpen(false)}><FaPalette /> I am a Designer</Link>
                         </div>
                       </>
                     )}
@@ -303,7 +271,8 @@ const Navbar = () => {
         </div>
       </header>
 
-      {!isHomePage && !isContactPage && !isProfilePage && !isTermsPage && !isRefundPage && !isShippingPage && !isPrivacyPage && (
+      {/* Renders on Home and standard product pages */}
+      {!isContactPage && !isProfilePage && !isTermsPage && !isRefundPage && !isShippingPage && !isPrivacyPage && (
         <div className="search-container">
           <div className="search-wrapper" ref={searchRef}>
             <form onSubmit={handleFormSubmit} className="search_form">
@@ -316,11 +285,8 @@ const Navbar = () => {
                 onChange={handleInputChange}
                 autoComplete="off"
               />
-              <button type="submit" className="search_button">
-                <FaSearch />
-              </button>
+              <button type="submit" className="search_button"><FaSearch /></button>
             </form>
-
             {showSuggestions && suggestions.length > 0 && (
               <ul className="search-suggestions">
                 {suggestions.map((s, i) => (
