@@ -56,7 +56,7 @@ export default function ShippingPolicy() {
           The seller is also responsible for resolving any claims related to damaged goods in accordance with our Refund Policy.
         </p>
         
-        <h3>7. Return Policy</h3>
+        <h3>8. Return Policy</h3>
         <p>
           Returns will be accepted only for damaged goods or incorrect deliveries. Please refer to our Refund Policy for detailed instructions on how to initiate a return and the conditions that apply.
           The money will be refunded to the original payment method within 7-10 business days after we receive the returned item and verify its condition. Please note that return shipping charges may apply, and the seller is responsible for covering these costs in cases of damaged or incorrect deliveries.
