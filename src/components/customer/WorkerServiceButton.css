@@ -1,188 +1,177 @@
-/* Container positioning for Desktop */
+/* Container positioning */
 .worker-service-global-wrapper {
-  position: fixed;
-  top: 100px;
-  right: 25px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 15px;
+    position: fixed;
+    top: 100px;
+    right: 25px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 15px;
 }
 
 .worker-overlay-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 9998;
-  backdrop-filter: blur(2px);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 9998;
+    backdrop-filter: blur(2px);
 }
 
-/* Button Styling */
+/* Button Styling & Attention Animation */
 .worker-customize-btn-global {
-  background-color: #606E52;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 50px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  transition: all 0.3s ease;
+    background-color: #606E52;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+/* Pulse animation for mobile focus */
+@keyframes pulse-attention {
+    0% {
+        box-shadow: 0 0 0 0 rgba(96, 110, 82, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 15px rgba(96, 110, 82, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(96, 110, 82, 0);
+    }
 }
 
 .worker-customize-btn-global.active {
-  background-color: #e74c3c;
-  z-index: 10000;
+    background-color: #e74c3c;
+    z-index: 10000;
+    animation: none;
 }
 
 /* List Overlay - Desktop Default */
 .worker-list-overlay {
-  background: white;
-  width: 350px;
-  max-height: 70vh;
-  overflow-y: auto;
-  border-radius: 15px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-  padding: 20px;
-  border: 1px solid #eee;
+    background: white;
+    width: 350px;
+    max-height: 70vh;
+    overflow-y: auto;
+    border-radius: 15px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border: 1px solid #eee;
 }
 
 .worker-list-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.mobile-close-btn { display: none; } /* Hidden on Desktop */
-
-.worker-item-mini {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #f5f5f5;
-}
-
-.worker-img-mini {
-  position: relative;
-  width: 70px;
-  height: 70px;
-  border-radius: 8px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.worker-call-btn-mini {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #72a159;
-  color: white;
-  padding: 6px 14px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-size: 0.85rem;
-  transition: opacity 0.2s;
-}
-
-/* RESPONSIVE BREAKPOINT (Matches your screenshot size) */
-@media (max-width: 768px) {
-  .worker-btn-text { display: none; } /* FAB style for mobile */
-  
-  .worker-service-global-wrapper {
-    top: auto;
-    bottom: 20px;
-    right: 20px;
-  }
-
-  .worker-list-overlay {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90vw;
-    max-height: 80vh;
-    margin: 0;
-    z-index: 10001;
-  }
-
-  .mobile-close-btn {
     display: flex;
-    background: #f0f0f0;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-
-  .worker-call-btn-mini span { font-size: 0.75rem; }
+    margin-bottom: 20px;
 }
 
-/* Animation */
-.animate-slide-up {
-  animation: slideIn 0.3s ease-out;
+.mobile-close-btn {
+    display: none;
 }
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ... existing desktop styles ... */
 
 .worker-category-bar {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  padding-bottom: 15px;
-  margin-bottom: 15px;
-  border-bottom: 1px solid #f0f0f0;
-  scrollbar-width: none; /* Hide scrollbar for Chrome/Safari */
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    scrollbar-width: none;
 }
 
-.worker-category-bar::-webkit-scrollbar { display: none; }
+.worker-category-bar::-webkit-scrollbar {
+    display: none;
+}
 
 .cat-pill {
-  background: #f5f5f5;
-  border: 1px solid #ddd;
-  padding: 6px 15px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: all 0.2s;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
 .cat-pill.active {
-  background: #606E52;
-  color: white;
-  border-color: #606E52;
+    background: #606E52;
+    color: white;
+    border-color: #606E52;
 }
 
-@media (max-width: 2560px) {
-    .worker-list-overlay{
-        width: 100%;
-    }
+.worker-item-mini {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f5f5f5;
 }
 
-/* Modal styling for mobile */
+.worker-img-mini {
+    position: relative;
+    width: 70px;
+    height: 70px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.worker-call-btn-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #72a159;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+/* RESPONSIVE DESIGN */
 @media (max-width: 768px) {
+  /* Ensure the text is visible instead of hidden */
+  .worker-btn-text { 
+    display: inline-block; 
+    font-size: 0.85rem;
+  }
+  
+  .worker-service-global-wrapper {
+    top: auto;
+    bottom: 30px; /* Elevated for thumb reach */
+    right: 15px;
+  }
+
+  .worker-customize-btn-global {
+    /* Change from circular FAB to a wide pill shape for visibility */
+    width: auto; 
+    height: auto;
+    padding: 10px 20px;
+    border-radius: 50px;
+    justify-content: center;
+    /* Maintain the pulse to grab attention */
+    animation: pulse-attention 2s infinite; 
+  }
+
+  /* Adjust the Bottom Sheet for mobile */
   .worker-list-overlay {
     position: fixed;
     top: auto;
-    bottom: 0; /* Bottom sheet style for mobile */
+    bottom: 0; 
     left: 0;
     width: 90vw;
     max-height: 80vh;
@@ -191,15 +180,20 @@
     z-index: 10001;
     padding: 25px 20px;
   }
-  
-  .worker-grid-mini {
-    padding-bottom: 40px;
-  }
+}
+/* Animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.no-workers {
-  text-align: center;
-  color: #999;
-  font-size: 0.9rem;
-  padding: 20px 0;
+.animate-slide-up {
+    animation: slideIn 0.3s ease-out;
 }

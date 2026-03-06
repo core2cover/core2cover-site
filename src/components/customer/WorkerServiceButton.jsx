@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
-import { FaTools, FaTimes, FaPhoneAlt, FaSearch } from "react-icons/fa";
+import { FaTools, FaTimes, FaPhoneAlt } from "react-icons/fa";
 import "./WorkerServiceButton.css";
 
 const WorkerServiceButton = () => {
@@ -10,17 +10,17 @@ const WorkerServiceButton = () => {
   const [filter, setFilter] = useState("All");
 
   const workers = [
-    { id: 1, name: "Plumbing Workers", category: "Plumbing", image: "https://images.pexels.com/photos/2310904/pexels-photo-2310904.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 2, name: "Carpenters Workers", category: "Carpentry", image: "https://images.pexels.com/photos/1249611/pexels-photo-1249611.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 3, name: "Electrician Workers", category: "Electrical", image: "https://images.pexels.com/photos/257736/pexels-photo-257736.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 1, name: "Plumbing Workers", category: "Plumbing", phone: "8275922422", image: "https://images.pexels.com/photos/2310904/pexels-photo-2310904.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 2, name: "Carpenters Workers", category: "Carpentry", phone: "8275922422", image: "https://images.pexels.com/photos/1249611/pexels-photo-1249611.jpeg?auto=compress&cs=tinysrgb&w=400" },
+    { id: 3, name: "Electrician Workers", category: "Electrical", phone: "8275922422", image: "https://images.pexels.com/photos/257736/pexels-photo-257736.jpeg?auto=compress&cs=tinysrgb&w=400" },
   ];
 
-  const categories = ["All", "Plumbing", "Carpentry", "Electrical",];
+  const categories = ["All", "Plumbing", "Carpentry", "Electrical"];
 
   const filteredWorkers = useMemo(() => {
     if (filter === "All") return workers;
     return workers.filter(w => w.category === filter);
-  }, [filter]);
+  }, [filter, workers]);
 
   return (
     <>
@@ -42,7 +42,6 @@ const WorkerServiceButton = () => {
               <button className="mobile-close-btn" onClick={() => setIsOpen(false)}><FaTimes /></button>
             </div>
 
-            {/* NEW: Category Filter Bar */}
             <div className="worker-category-bar">
               {categories.map(cat => (
                 <button 
