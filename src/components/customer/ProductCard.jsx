@@ -41,6 +41,13 @@ const ProductCard = ({
     return words.slice(0, 3).join(" ") + "...";
   };
 
+  const formatDescription = (text, limit = 3) => {
+    if (!text) return "No description provided.";
+    const words = text.split(" ");
+    if (words.length <= limit) return text;
+    return words.slice(0, limit).join(" ") + "...";
+  };
+
   // To handle responsiveness in JS (Optional but cleaner for your specific request)
   const [isMobile, setIsMobile] = useState(false);
 
@@ -151,12 +158,7 @@ const ProductCard = ({
           </div>
 
           <p className="product-desc-text">
-            {description
-              ? (description.split(" ").length > 10
-                ? description.split(" ").slice(0, 10).join(" ") + "..."
-                : description)
-              : "No description provided."
-            }
+            {formatDescription(description)}
           </p>
 
           <div className="product-seller-group">
