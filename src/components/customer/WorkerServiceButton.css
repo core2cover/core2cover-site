@@ -152,7 +152,7 @@
   
   .worker-service-global-wrapper {
     top: auto;
-    bottom: 30px; /* Elevated for thumb reach */
+    bottom: 570px; /* Elevated for thumb reach */
     right: 15px;
   }
 
