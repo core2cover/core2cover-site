@@ -8,10 +8,9 @@ import "./Product_Info.css";
 import { addToCart } from "../../utils/cart";
 import api from "../../api/axios";
 import Image from "next/image";
-import { FaArrowLeft, FaShareAlt, FaTimes, FaPlay, FaPause, FaExpand, FaStore, FaTruckLoading } from "react-icons/fa";
+import { FaArrowLeft, FaShareAlt, FaTimes, FaPlay, FaPause, FaExpand, FaStore, FaTruckLoading, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import MessageBox from "../ui/MessageBox";
 import LoadingSpinner from "../ui/LoadingSpinner";
-import { MdOutlineBrokenImage } from "react-icons/md";
 
 /* ---------------------------
     VideoPlayer — custom controls
@@ -40,7 +39,8 @@ function VideoPlayer({ src, poster }) {
         };
     }, []);
 
-    const togglePlay = () => {
+    const togglePlay = (e) => {
+        e.stopPropagation(); // Prevent triggering parent sliding/zoom
         const v = videoRef.current;
         if (!v) return;
         v.paused ? (v.play(), setPlaying(true)) : (v.pause(), setPlaying(false));
@@ -53,13 +53,15 @@ function VideoPlayer({ src, poster }) {
         setCurrent(v.currentTime);
     };
 
-    const toggleMute = () => {
+    const toggleMute = (e) => {
+        e.stopPropagation();
         if (!videoRef.current) return;
         videoRef.current.muted = !videoRef.current.muted;
         setMuted(videoRef.current.muted);
     };
 
-    const toggleFullscreen = async () => {
+    const toggleFullscreen = async (e) => {
+        e.stopPropagation();
         if (!containerRef.current) return;
         if (!document.fullscreenElement) {
             await containerRef.current.requestFullscreen();
@@ -99,13 +101,16 @@ const ProductInfo = () => {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [descExpanded, setDescExpanded] = useState(false);
-    const [selectedMedia, setSelectedMedia] = useState(null);
+    const [selectedMediaIndex, setSelectedMediaIndex] = useState(0); // Tracks index instead of object for sliding
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [isProcessing, setIsProcessing] = useState(false);
     const [msg, setMsg] = useState({ text: "", type: "success", show: false });
 
-    // --- ZOOM & PAN STATES (Exact logic from DesignerInfo) ---
+    // --- SLIDING LOGIC STATES ---
+    const [touchStartX, setTouchStartX] = useState(0);
+
+    // --- ZOOM & PAN STATES ---
     const [zoomLevel, setZoomLevel] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
@@ -119,7 +124,6 @@ const ProductInfo = () => {
 
     const triggerMsg = (text, type = "success") => setMsg({ text, type, show: true });
 
-    // --- LIGHTBOX ZOOM LOGIC (Exact logic from DesignerInfo) ---
     const handleWheel = useCallback((e) => {
         e.preventDefault();
         const delta = e.deltaY * -0.002;
@@ -142,6 +146,21 @@ const ProductInfo = () => {
     };
 
     const handleMouseUp = () => setIsDragging(false);
+
+    // --- UPDATED SLIDING & FULLSCREEN TOUCH LOGIC ---
+    const handleMainTouchStart = (e) => {
+        setTouchStartX(e.touches[0].clientX);
+    };
+
+    const handleMainTouchEnd = (e) => {
+        const touchEndX = e.changedTouches[0].clientX;
+        const diff = touchStartX - touchEndX;
+
+        if (Math.abs(diff) > 50) { // Threshold for swipe
+            if (diff > 0) nextMedia();
+            else prevMedia();
+        }
+    };
 
     const handleTouchStart = (e) => {
         if (e.touches.length === 1) {
@@ -170,7 +189,26 @@ const ProductInfo = () => {
     };
 
     const openFullscreen = () => setIsFullscreen(true);
-    
+
+
+    useEffect(() => {
+        const handleBackButton = () => {
+            if (isFullscreen) {
+                closeFullscreen();
+            }
+        };
+
+        if (isFullscreen) {
+            // Push a dummy state so the back button has something to "pop"
+            window.history.pushState({ lightbox: true }, "", window.location.href);
+            window.addEventListener("popstate", handleBackButton);
+        }
+
+        return () => {
+            window.removeEventListener("popstate", handleBackButton);
+        };
+    }, [isFullscreen]);
+
     const closeFullscreen = () => {
         setIsFullscreen(false);
         setZoomLevel(1);
@@ -216,11 +254,15 @@ const ProductInfo = () => {
         return list;
     }, [images, video]);
 
-    useEffect(() => {
-        if (mediaList.length > 0 && !selectedMedia) {
-            setSelectedMedia(mediaList[0]);
-        }
-    }, [mediaList, selectedMedia]);
+    const nextMedia = useCallback(() => {
+        setSelectedMediaIndex(prev => (prev + 1) % mediaList.length);
+    }, [mediaList.length]);
+
+    const prevMedia = useCallback(() => {
+        setSelectedMediaIndex(prev => (prev - 1 + mediaList.length) % mediaList.length);
+    }, [mediaList.length]);
+
+    const selectedMedia = mediaList[selectedMediaIndex] || null;
 
     const displayTitle = title || name || "Product Details";
     const resolvedSeller = typeof seller === "string" ? seller : (seller?.name || "Verified Seller");
@@ -289,7 +331,7 @@ const ProductInfo = () => {
     const handleShare = async () => {
         const shareData = { title: displayTitle, text: `Check out ${displayTitle} on Core2Cover!`, url: window.location.href };
         try {
-            if (navigator.share) { await navigator.share(shareData); } 
+            if (navigator.share) { await navigator.share(shareData); }
             else { await navigator.clipboard.writeText(window.location.href); triggerMsg("Link copied to clipboard!", "success"); }
         } catch (err) { if (err.name !== "AbortError") triggerMsg("Sharing failed", "error"); }
     };
@@ -311,31 +353,47 @@ const ProductInfo = () => {
                 </div>
 
                 <div className="pd-left">
-                    <div className="pd-image-box" onClick={openFullscreen} style={{ position: "relative", height: 420, cursor: 'zoom-in' }}>
-                        {selectedMedia?.type === "video" ? (
-                            <VideoPlayer src={selectedMedia.src} poster={images?.[0]} />
-                        ) : (
-                            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                                <Image 
-                                    src={selectedMedia?.src} 
-                                    alt={displayTitle} 
-                                    fill 
-                                    style={{ objectFit: 'contain' }} 
-                                    unoptimized 
-                                />
-                            </div>
+                    <div
+                        className="pd-image-box"
+                        style={{ position: "relative", height: 420, overflow: 'hidden' }}
+                        onTouchStart={handleMainTouchStart}
+                        onTouchEnd={handleMainTouchEnd}
+                    >
+                        {/* Slide Arrows for Desktop */}
+                        {mediaList.length > 1 && (
+                            <>
+                                <button className="pd-slide-btn prev" onClick={(e) => { e.stopPropagation(); prevMedia(); }}><FaChevronLeft /></button>
+                                <button className="pd-slide-btn next" onClick={(e) => { e.stopPropagation(); nextMedia(); }}><FaChevronRight /></button>
+                            </>
                         )}
-                        <div className="zoom-hint-aesthetic"><FaExpand /> Click to View Fullscreen</div>
+
+                        <div style={{ width: "100%", height: "100%", cursor: 'zoom-in' }} onClick={openFullscreen}>
+                            {selectedMedia?.type === "video" ? (
+                                <VideoPlayer src={selectedMedia.src} poster={images?.[0]} />
+                            ) : (
+                                <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                    <Image
+                                        src={selectedMedia?.src}
+                                        alt={displayTitle}
+                                        fill
+                                        style={{ objectFit: 'contain' }}
+                                        unoptimized
+                                    />
+                                </div>
+                            )}
+                        </div>
+                        <div className="zoom-hint-aesthetic"><FaExpand /> Click for Fullscreen • Swipe to Slide</div>
                     </div>
-                    <div className="pd-thumbnails" style={{ marginTop: 14 }}>
+
+                    <div className="pd-thumbnails" style={{ marginTop: 14, overflowX: 'auto', whiteSpace: 'nowrap' }}>
                         {mediaList.map((m, i) => (
                             <div
                                 key={i}
-                                className={`pd-thumb-container ${selectedMedia?.src === m.src ? "active-thumb" : ""}`}
-                                onClick={() => setSelectedMedia(m)}
+                                className={`pd-thumb-container ${selectedMediaIndex === i ? "active-thumb" : ""}`}
+                                onClick={() => setSelectedMediaIndex(i)}
                                 style={{
                                     width: 80, height: 80, borderRadius: 8, overflow: "hidden",
-                                    border: selectedMedia?.src === m.src ? "2px solid #4e5a44" : "1px solid #ddd",
+                                    border: selectedMediaIndex === i ? "2px solid #4e5a44" : "1px solid #ddd",
                                     marginRight: 10, display: "inline-block", cursor: "pointer", background: "#000"
                                 }}
                             >
@@ -453,15 +511,24 @@ const ProductInfo = () => {
                 </div>
             </section>
 
-            {/* FULLSCREEN LIGHTBOX - WITH EXACT DESIGNER INFO LOGIC */}
+            {/* FULLSCREEN LIGHTBOX */}
             {isFullscreen && (
                 <div className="pd-fullscreen-overlay" onWheel={handleWheel} onClick={closeFullscreen}>
                     <button className="pd-fullscreen-close" onClick={closeFullscreen}><FaTimes /></button>
+
+                    {/* Fullscreen Navigation */}
+                    {mediaList.length > 1 && (
+                        <>
+                            <button className="pd-slide-btn prev" onClick={(e) => { e.stopPropagation(); prevMedia(); }}><FaChevronLeft /></button>
+                            <button className="pd-slide-btn next" onClick={(e) => { e.stopPropagation(); nextMedia(); }}><FaChevronRight /></button>
+                        </>
+                    )}
+
                     <span className="lightbox-controls-aesthetic">
                         {isMobile ? "Pinch to Zoom • Swipe to Move" : "Scroll to Zoom • Drag to Move"}
                     </span>
-                    <div 
-                        className="pd-fullscreen-content" 
+                    <div
+                        className="pd-fullscreen-content"
                         onClick={(e) => e.stopPropagation()}
                         onMouseMove={handleMouseMove}
                         onMouseUp={handleMouseUp}

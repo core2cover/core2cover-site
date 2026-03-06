@@ -7,7 +7,8 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import {
   FaArrowLeft, FaStar, FaStarHalfAlt, FaRegStar,
-  FaTimes, FaExpand, FaCheckCircle, FaMinusCircle, FaMapMarkerAlt, FaRegUser
+  FaTimes, FaExpand, FaCheckCircle, FaMinusCircle, FaMapMarkerAlt, FaRegUser,
+  FaChevronLeft, FaChevronRight
 } from "react-icons/fa";
 import { LuMapPin } from "react-icons/lu";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -73,7 +74,7 @@ const renderStars = (avg) => {
 };
 
 /* ============================================================
-    1. MAIN CONTENT COMPONENT
+    MAIN CONTENT COMPONENT
    ============================================================ */
 const DesignerInfoContent = () => {
   const { data: session, status } = useSession();
@@ -82,7 +83,6 @@ const DesignerInfoContent = () => {
   const designerId = searchParams.get("id");
 
   const [designer, setDesigner] = useState(null);
-  const [activeImage, setActiveImage] = useState(null);
   const [selectedWorkIndex, setSelectedWorkIndex] = useState(-1);
   const [ratings, setRatings] = useState([]);
   const [stats, setStats] = useState({ average: 0, total: 0 });
@@ -94,10 +94,13 @@ const DesignerInfoContent = () => {
   const [msg, setMsg] = useState({ text: "", type: "success", show: false });
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
+  // --- SLIDING, ZOOM & AUTO-PLAY STATES ---
+  const [touchStartX, setTouchStartX] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const touchStartDist = useRef(0);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -106,7 +109,10 @@ const DesignerInfoContent = () => {
     budget: "", workType: "", timelineDate: "", description: ""
   });
 
-  // AUTO-COMPLETE USER DETAILS FROM SESSION
+  useEffect(() => {
+    setIsMobile('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
+
   useEffect(() => {
     if (session?.user) {
       setHireForm(prev => ({
@@ -117,52 +123,6 @@ const DesignerInfoContent = () => {
       }));
     }
   }, [session]);
-
-  // GEOLOCATION AUTO-COMPLETE
-  const fetchCurrentLocation = (e) => {
-    e.preventDefault();
-    if (!("geolocation" in navigator)) {
-      triggerMsg("Geolocation not supported", "error");
-      return;
-    }
-
-    setLocLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const { latitude, longitude } = position.coords;
-          const response = await fetch(`/api/geocode?lat=${latitude}&lon=${longitude}`);
-          const data = await response.json();
-
-          if (data.address) {
-            const city = data.address.city || data.address.town || data.address.village || "";
-            const state = data.address.state || "";
-            setHireForm(prev => ({
-              ...prev,
-              location: city && state ? `${city}, ${state}` : city || state || "Detected Location"
-            }));
-            triggerMsg("Location detected!", "success");
-          }
-        } catch (error) {
-          console.error("Geocode Error:", error);
-          triggerMsg("Failed to identify location", "error");
-        } finally {
-          setLocLoading(false);
-        }
-      },
-      (error) => {
-        setLocLoading(false);
-        triggerMsg("Location access denied", "error");
-      }
-    );
-  };
-
-  useEffect(() => {
-    const checkTouch = () => {
-      setIsMobile('ontouchstart' in window || navigator.maxTouchPoints > 0);
-    };
-    checkTouch();
-  }, []);
 
   useEffect(() => {
     if (!designerId) return;
@@ -182,10 +142,6 @@ const DesignerInfoContent = () => {
         }
         if (info.works?.length > 0) {
           setSelectedWorkIndex(0);
-          setActiveImage(info.works[0].image);
-        } else {
-          setSelectedWorkIndex(-1);
-          setActiveImage(null);
         }
       } catch (err) {
         console.error("Data Fetch Error:", err);
@@ -196,10 +152,44 @@ const DesignerInfoContent = () => {
     fetchAll();
   }, [designerId]);
 
-  const triggerMsg = (text, type = "success") => setMsg({ text, type, show: true });
-  const handleHireChange = (e) => setHireForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  // --- SLIDING LOGIC ---
+  const stopAutoPlay = () => setIsAutoPlaying(false);
 
-  // LIGHTBOX LOGIC
+  const nextWork = useCallback(() => {
+    if (!designer?.works?.length) return;
+    setSelectedWorkIndex(prev => (prev + 1) % designer.works.length);
+  }, [designer?.works]);
+
+  const prevWork = useCallback(() => {
+    if (!designer?.works?.length) return;
+    setSelectedWorkIndex(prev => (prev - 1 + designer.works.length) % designer.works.length);
+  }, [designer?.works]);
+
+  // --- AUTO-PLAY EFFECT ---
+  useEffect(() => {
+    let interval;
+    if (isAutoPlaying && designer?.works?.length > 1 && !isLightboxOpen && !showForm) {
+      interval = setInterval(() => {
+        nextWork();
+      }, 5000); // Transitions every 5 seconds
+    }
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, designer?.works, isLightboxOpen, showForm, nextWork]);
+
+  const handleMainTouchStart = (e) => {
+    setTouchStartX(e.touches[0].clientX);
+    stopAutoPlay(); // Stop auto-play on interaction
+  };
+
+  const handleMainTouchEnd = (e) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) nextWork();
+      else prevWork();
+    }
+  };
+
   const handleWheel = useCallback((e) => {
     e.preventDefault();
     const delta = e.deltaY * -0.002;
@@ -249,11 +239,32 @@ const DesignerInfoContent = () => {
     }
   };
 
+  useEffect(() => {
+    const handleBack = () => {
+      if (isLightboxOpen) {
+        closeLightbox();
+      }
+    };
+
+    if (isLightboxOpen) {
+      // Push state to history stack
+      window.history.pushState({ lightbox: true }, "", window.location.href);
+      window.addEventListener("popstate", handleBack);
+    }
+
+    return () => {
+      window.removeEventListener("popstate", handleBack);
+    };
+  }, [isLightboxOpen]);
+
   const closeLightbox = () => {
     setIsLightboxOpen(false);
     setZoomLevel(1);
     setPosition({ x: 0, y: 0 });
   };
+
+  const triggerMsg = (text, type = "success") => setMsg({ text, type, show: true });
+  const handleHireChange = (e) => setHireForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleHireSubmit = async (e) => {
     e.preventDefault();
@@ -273,13 +284,49 @@ const DesignerInfoContent = () => {
     }
   };
 
+  const fetchCurrentLocation = (e) => {
+    e.preventDefault();
+    if (!("geolocation" in navigator)) {
+      triggerMsg("Geolocation not supported", "error");
+      return;
+    }
+    setLocLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords;
+          const res = await fetch(`/api/geocode?lat=${latitude}&lon=${longitude}`);
+          const data = await res.json();
+          if (data.address) {
+            const city = data.address.city || data.address.town || data.address.village || "";
+            const state = data.address.state || "";
+            setHireForm(prev => ({
+              ...prev,
+              location: city && state ? `${city}, ${state}` : city || state || "Detected Location"
+            }));
+            triggerMsg("Location detected!", "success");
+          }
+        } catch (error) {
+          triggerMsg("Failed to identify location", "error");
+        } finally {
+          setLocLoading(false);
+        }
+      },
+      () => {
+        setLocLoading(false);
+        triggerMsg("Location access denied", "error");
+      }
+    );
+  };
+
   if (loading || !designer) return <LoadingSpinner message="Opening portfolio..." />;
+
+  const activeImage = designer.works?.[selectedWorkIndex]?.image || null;
 
   return (
     <>
       <div className="designer-info-page">
-        {hireLoading && <LoadingSpinner message="Sending request to designer..." />}
-
+        {hireLoading && <LoadingSpinner message="Sending request..." />}
         {msg.show && <MessageBox message={msg.text} type={msg.type} onClose={() => setMsg({ ...msg, show: false })} />}
 
         <button className="back-btn" onClick={() => router.back()}><FaArrowLeft /> Back</button>
@@ -288,19 +335,9 @@ const DesignerInfoContent = () => {
           <div className="designer-text">
             <div className="profile-header-wrap">
               {designer.profile?.profileImage ? (
-                <Image
-                  src={designer.profile.profileImage}
-                  width={150}
-                  height={150}
-                  className="designer-photo"
-                  alt="profile"
-                  unoptimized
-                />
+                <Image src={designer.profile.profileImage} width={150} height={150} className="designer-photo" alt="profile" unoptimized />
               ) : (
-                /* FALLBACK ICON DISPLAY */
-                <div className="designer-photo icon-fallback-profile">
-                  <FaRegUser />
-                </div>
+                <div className="designer-photo icon-fallback-profile"><FaRegUser /></div>
               )}
               <div className={`availability-pill ${designer.availability?.toLowerCase() === "available" ? "available" : "unavailable"}`}>
                 {designer.availability?.toLowerCase() === "available" ? <FaCheckCircle /> : <FaMinusCircle />}
@@ -318,40 +355,45 @@ const DesignerInfoContent = () => {
 
           <div className="designer-main-image-container">
             {designer.works?.length > 0 && activeImage ? (
-              <div className="designer-main-image" onClick={() => setIsLightboxOpen(true)}>
-                <Image
-                  src={activeImage}
-                  alt="Main"
-                  width={800}
-                  height={600}
-                  priority
-                  unoptimized
-                  style={{ objectFit: "cover", cursor: "zoom-in" }}
-                  onError={(e) => {
-                    // If Cloudinary blocks the main image, show your logo instead
-                    setActiveImage("/assets/logo/CoreToCover_2_.png");
-                  }}
-                />
-                <div className="zoom-hint"><FaExpand /> Click to View Fullscreen</div>
+              <div
+                className="designer-main-image carousel-wrapper"
+                onTouchStart={handleMainTouchStart}
+                onTouchEnd={handleMainTouchEnd}
+                onMouseEnter={stopAutoPlay} // Pause auto-play on hover
+              >
+                {designer.works.length > 1 && (
+                  <>
+                    <button className="pd-slide-btn prev" onClick={(e) => { e.stopPropagation(); prevWork(); stopAutoPlay(); }}><FaChevronLeft /></button>
+                    <button className="pd-slide-btn next" onClick={(e) => { e.stopPropagation(); nextWork(); stopAutoPlay(); }}><FaChevronRight /></button>
+                  </>
+                )}
+
+                <div className="image-click-area" onClick={() => setIsLightboxOpen(true)}>
+                  <Image
+                    src={activeImage}
+                    alt="Main Portfolio"
+                    width={800}
+                    height={600}
+                    priority
+                    unoptimized
+                    style={{ objectFit: "cover", cursor: "zoom-in" }}
+                  />
+                  <div className="zoom-hint">
+                    <FaExpand /> View Fullscreen • Swipe to Slide {isAutoPlaying && "• Auto-playing"}
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="designer-main-image placeholder">
                 <div className="placeholder-content">
-                  <Image
-                    src="/assets/logo/CoreToCover_2_.png"
-                    alt="No Work Uploaded"
-                    width={150}
-                    height={150}
-                    style={{ opacity: 0.3, filter: 'grayscale(100%)' }}
-                  />
-                  <p>No portfolio images uploaded yet</p>
+                  <Image src="/assets/logo/CoreToCover_2_.png" alt="No Work" width={150} height={150} style={{ opacity: 0.3, filter: 'grayscale(100%)' }} />
+                  <p>No portfolio uploaded yet</p>
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Portfoilo Section - with empty state handler */}
         <section className="portfolio-section">
           <h2>Works Portfolio</h2>
           {designer.works && designer.works.length > 0 ? (
@@ -360,31 +402,18 @@ const DesignerInfoContent = () => {
                 <div
                   key={w.id}
                   className={`portfolio-item ${selectedWorkIndex === i ? 'active' : ''}`}
-                  onClick={() => { setActiveImage(w.image); setSelectedWorkIndex(i); }}
+                  onClick={() => { setSelectedWorkIndex(i); stopAutoPlay(); }}
                 >
-                  <Image
-                    src={w.image}
-                    width={300}
-                    height={200}
-                    alt="Work"
-                    unoptimized // Bypass Next.js optimization to save Cloudinary credits
-                    onError={(e) => {
-                      // If Cloudinary blocks the image (402), swap it for a local placeholder
-                      e.currentTarget.src = "/assets/logo/CoreToCover_2_.png";
-                    }}
-                  />
+                  <Image src={w.image} width={300} height={200} alt="Work" unoptimized />
                   <p className="work_desc">{w.description}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="empty-portfolio-message">
-              <p>No works or portfolio items have been uploaded by this designer yet.</p>
-            </div>
+            <div className="empty-portfolio-message"><p>No works uploaded yet.</p></div>
           )}
         </section>
 
-        {/* RESTORED REVIEWS SECTION WITH YOUR CUSTOM CLASSES */}
         <section className="designer-reviews-section">
           <div className="section-header">
             <h2>Designer Feedback</h2>
@@ -394,7 +423,6 @@ const DesignerInfoContent = () => {
               <span className="review-date">({stats.total} Total)</span>
             </div>
           </div>
-
           <div className="reviews-container">
             {ratings.length > 0 ? (
               ratings.map((rev, index) => (
@@ -411,15 +439,11 @@ const DesignerInfoContent = () => {
                       {"★".repeat(rev.stars)}{"☆".repeat(5 - rev.stars)}
                     </div>
                   </div>
-                  <div className="rev-body">
-                    <p>“{rev.review}”</p>
-                  </div>
+                  <div className="rev-body"><p>“{rev.review}”</p></div>
                 </div>
               ))
             ) : (
-              <div className="no-history" style={{ padding: '20px', gridColumn: '1/-1', textAlign: 'center' }}>
-                No feedback received yet for this designer.
-              </div>
+              <div className="no-history" style={{ padding: '20px', gridColumn: '1/-1', textAlign: 'center' }}>No feedback yet.</div>
             )}
           </div>
         </section>
@@ -427,18 +451,16 @@ const DesignerInfoContent = () => {
         {isLightboxOpen && (
           <div className="lightbox-overlay" onWheel={handleWheel} onClick={closeLightbox}>
             <button className="lightbox-close" onClick={closeLightbox}><FaTimes /></button>
+            {designer.works.length > 1 && (
+              <>
+                <button className="pd-slide-btn prev" onClick={(e) => { e.stopPropagation(); prevWork(); }}><FaChevronLeft /></button>
+                <button className="pd-slide-btn next" onClick={(e) => { e.stopPropagation(); nextWork(); }}><FaChevronRight /></button>
+              </>
+            )}
             <span className="lightbox-controls-aesthetic">
               {isMobile ? "Pinch to Zoom • Swipe to Move" : "Scroll to Zoom • Drag to Move"}
             </span>
-            <div
-              className="lightbox-content"
-              onClick={(e) => e.stopPropagation()}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={() => setIsDragging(false)}
-            >
+            <div className="lightbox-content" onClick={(e) => e.stopPropagation()} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => setIsDragging(false)}>
               <img
                 src={activeImage}
                 alt="Fullscreen"
@@ -462,41 +484,19 @@ const DesignerInfoContent = () => {
               <div className="modal-header"><h2>Hire {designer.fullname}</h2><FaTimes onClick={() => setShowForm(false)} style={{ cursor: 'pointer' }} /></div>
               <form className="modal-form" onSubmit={handleHireSubmit}>
                 <div className="form-grid">
-                  <div>
-                    <label>Full Name</label>
-                    <input name="fullName" autoComplete="name" value={hireForm.fullName} onChange={handleHireChange} required />
-                  </div>
-                  <div>
-                    <label>Mobile</label>
-                    <input name="mobile" type="tel" autoComplete="tel" placeholder="Enter mobile number" value={hireForm.mobile} onChange={handleHireChange} required />
-                  </div>
-                  <div>
-                    <label>Email</label>
-                    <input type="email" name="email" autoComplete="email" value={hireForm.email} onChange={handleHireChange} required />
-                  </div>
-
+                  <div><label>Full Name</label><input name="fullName" value={hireForm.fullName} onChange={handleHireChange} required /></div>
+                  <div><label>Mobile</label><input name="mobile" type="tel" value={hireForm.mobile} onChange={handleHireChange} required /></div>
+                  <div><label>Email</label><input type="email" name="email" value={hireForm.email} onChange={handleHireChange} required /></div>
                   <div className="location-field-wrapper">
                     <label>Location</label>
                     <div className="location-input-container">
-                      <input
-                        name="location"
-                        value={hireForm.location}
-                        onChange={handleHireChange}
-                        placeholder="City, State"
-                        required
-                      />
-                      <button
-                        type="button"
-                        className={`location-fetch-btn ${locLoading ? 'loading' : ''}`}
-                        onClick={fetchCurrentLocation}
-                        disabled={locLoading}
-                      >
+                      <input name="location" value={hireForm.location} onChange={handleHireChange} placeholder="City, State" required />
+                      <button type="button" className={`location-fetch-btn ${locLoading ? 'loading' : ''}`} onClick={fetchCurrentLocation} disabled={locLoading}>
                         {locLoading ? <div className="btn-spinner"></div> : <FaMapMarkerAlt />}
                         <span>{locLoading ? "Detecting..." : "Detect"}</span>
                       </button>
                     </div>
                   </div>
-
                   <div><label>Budget (₹)</label><input type="number" name="budget" value={hireForm.budget} onChange={handleHireChange} required /></div>
                   <div>
                     <label>Work Type</label>
@@ -523,58 +523,29 @@ const DesignerInfoContent = () => {
       <Footer />
 
       <style jsx>{`
-        .location-input-container {
-          display: flex;
-          position: relative;
-          align-items: center;
-          gap: 5px;
-        }
-        .location-input-container input {
-          flex: 1;
-        }
+        .location-input-container { display: flex; align-items: center; gap: 5px; }
+        .location-input-container input { flex: 1; }
         .location-fetch-btn {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          background: #f0f2f0;
-          border: 1px solid #4a5a3f;
-          color: #4a5a3f;
-          padding: 8px 12px;
-          border-radius: 6px;
-          cursor: pointer;
-          font-size: 13px;
-          font-weight: 600;
-          transition: all 0.2s ease;
-          height: 40px;
-          white-space: nowrap;
+          display: flex; align-items: center; gap: 6px; background: #f0f2f0;
+          border: 1px solid #4a5a3f; color: #4a5a3f; padding: 8px 12px;
+          border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;
+          transition: all 0.2s ease; height: 40px; white-space: nowrap;
         }
-        .location-fetch-btn:hover {
-          background: #4a5a3f;
-          color: white;
-        }
-        .location-fetch-btn.loading {
-          opacity: 0.7;
-          cursor: not-allowed;
-        }
+        .location-fetch-btn:hover { background: #4a5a3f; color: white; }
+        .location-fetch-btn.loading { opacity: 0.7; cursor: not-allowed; }
         .btn-spinner {
-          width: 14px;
-          height: 14px;
-          border: 2px solid #ccc;
-          border-top: 2px solid #4a5a3f;
-          border-radius: 50%;
+          width: 14px; height: 14px; border: 2px solid #ccc;
+          border-top: 2px solid #4a5a3f; border-radius: 50%;
           animation: spin 0.8s linear infinite;
         }
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
       `}</style>
     </>
   );
 };
 
 const DesignerInfo = () => (
-  <Suspense fallback={<LoadingSpinner message="Preparing designer profile..." />}>
+  <Suspense fallback={<LoadingSpinner message="Preparing profile..." />}>
     <Navbar />
     <DesignerInfoContent />
   </Suspense>
