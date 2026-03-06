@@ -7,6 +7,8 @@ import "./globals.css";
 import { NextAuthProvider } from "@/components/providers/NextAuthProvider";
 import { usePathname } from "next/navigation";
 import { Analytics } from '@vercel/analytics/next'; 
+// 1. Import your new global button
+import WorkerServiceButton from "@/components/customer/WorkerServiceButton";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +36,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   return (
     <div className={`${geistSans.variable} ${geistMono.variable} antialiased ${shouldDisableScroll ? "no-scroll" : ""}`}>
       <NextAuthProvider>
+        {/* 2. Place the button here so it appears on every page */}
+        <WorkerServiceButton />
+        
         <Suspense fallback={null}>
           {children}
         </Suspense>

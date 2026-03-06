@@ -1,158 +1,161 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 // Components
 import Footer from "./Footer";
 import Navbar from "./Navbar";
-import ProductCard from "./ProductCard";
-import DesignerCard from "./DesignerCard";
 import LoadingSpinner from "../ui/LoadingSpinner";
-import { FaArrowRight, FaBoxOpen, FaLayerGroup, FaUserTie, FaTools, FaPhoneAlt } from "react-icons/fa";
+import WorkerServiceCard from "./WorkerServiceButton";
 import "./Home.css";
+
+// Helper function to shuffle arrays for true randomness
+const shuffleArray = (array) => {
+  return array
+    .map((value) => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+};
+
+// SLIDESHOW CARD COMPONENT (Used for Finished, Raw, and Designers)
+const Card = ({ images, title, onClick }) => {
+  const [index, setIndex] = useState(0);
+  const [fade, setFade] = useState(false);
+
+  useEffect(() => {
+    if (!images || images.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setFade(true);
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % images.length);
+        setFade(false);
+      }, 300); 
+    }, 4500); 
+
+    return () => clearInterval(interval);
+  }, [images?.length]);
+
+  const displayImages = useMemo(() => {
+    if (images && images.length > 0) return images;
+    // Default fallback if DB is empty
+    return ["https://images.pexels.com/photos/276514/pexels-photo-276514.jpeg?auto=compress&cs=tinysrgb&w=800"];
+  }, [images]);
+
+  return (
+    <div className="partition-card-vertical" onClick={onClick}>
+      <div className="partition-img-box">
+        <Image
+          src={displayImages[index % displayImages.length]}
+          alt={title}
+          className={`slideshow-img ${fade ? "fade-out" : "fade-in"}`}
+          fill
+          style={{ objectFit: 'cover' }}
+          unoptimized={true} 
+        />
+      </div>
+      <h2 className="partition-title-under">{title}</h2>
+    </div>
+  );
+};
 
 const Home = () => {
   const router = useRouter();
   const [pageLoading, setPageLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState("All");
-
-  const [finishedProducts, setFinishedProducts] = useState([]);
-  const [rawMaterials, setRawMaterials] = useState([]);
-  const [designers, setDesigners] = useState([]);
-
-  const workers = [
-    { id: 1, name: "Plumbers", phone: "8275922422", image: "https://images.pexels.com/photos/2310904/pexels-photo-2310904.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 2, name: "Carpenters", phone: "8275922422", image: "https://images.pexels.com/photos/1249611/pexels-photo-1249611.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 3, name: "Electricians", phone: "8275922422", image: "https://images.pexels.com/photos/257736/pexels-photo-257736.jpeg?auto=compress&cs=tinysrgb&w=400" },
-    { id: 4, name: "Construction Workers", phone: "8275922422", image: "https://images.pexels.com/photos/585419/pexels-photo-585419.jpeg?auto=compress&cs=tinysrgb&w=800" },
-  ];
-
-  const finishedRef = useRef(null);
-  const rawRef = useRef(null);
-  const designersRef = useRef(null);
-  const workersRef = useRef(null);
-
-  const scrollToSection = (ref) => {
-    setTimeout(() => {
-      ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 100);
-  };
+  
+  const [finishedImages, setFinishedImages] = useState([]);
+  const [rawImages, setRawImages] = useState([]);
+  const [designerImages, setDesignerImages] = useState([]);
+  const [workerImages, setWorkerImages] = useState([]); // State for Service Workers
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchHomeData = async () => {
       try {
-        const [finishedRes, rawRes, designersRes] = await Promise.all([
+        const [finishedRes, rawRes, designersRes, workersRes] = await Promise.all([
           fetch(`/api/products?type=finished`),
           fetch(`/api/products?type=material`),
-          fetch(`/api/designers`)
+          fetch(`/api/designers`),
+          fetch(`/api/products?type=worker`) // Fetching workers from DB
         ]);
 
         const finishedData = await finishedRes.json();
         const rawData = await rawRes.json();
         const designersData = await designersRes.json();
+        const workersData = await workersRes.json();
 
-        setFinishedProducts(Array.isArray(finishedData) ? finishedData.slice(0, 4) : []);
-        setRawMaterials(Array.isArray(rawData) ? rawData.slice(0, 4) : []);
-        setDesigners(Array.isArray(designersData) ? designersData.slice(0, 4) : []);
+        // 1. Finished Products: Shuffle and slice top 10
+        const allFinished = Array.isArray(finishedData) 
+          ? finishedData.map(p => p.images?.[0]).filter(Boolean) 
+          : [];
+        setFinishedImages(shuffleArray(allFinished).slice(0, 10));
+
+        // 2. Raw Materials: Shuffle and slice top 10
+        const allRaw = Array.isArray(rawData) 
+          ? rawData.map(p => p.images?.[0]).filter(Boolean) 
+          : [];
+        setRawImages(shuffleArray(allRaw).slice(0, 10));
+        
+        // 3. Designers: Extracting from DesignerWork model (works relation)
+        const allWorkImages = Array.isArray(designersData) 
+          ? designersData.flatMap(d => (d.works || []).map(w => w.image)).filter(Boolean)
+          : [];
+        setDesignerImages(shuffleArray(allWorkImages).slice(0, 15));
+
+        // 4. Service Workers: Shuffle and slice images from worker listings
+        const allWorkers = Array.isArray(workersData)
+          ? workersData.map(w => w.images?.[0]).filter(Boolean)
+          : [];
+        setWorkerImages(shuffleArray(allWorkers).slice(0, 10));
+
       } catch (err) {
-        console.error("Home Data Fetch Error:", err);
+        console.error("Failed to fetch database images:", err);
       } finally {
         setPageLoading(false);
       }
     };
-    fetchData();
+
+    fetchHomeData();
   }, []);
-
-  if (pageLoading) return <LoadingSpinner message="Welcome to Core2Cover" />;
-
-  const showFinished = activeFilter === "All" || activeFilter === "Finished";
-  const showMaterials = activeFilter === "All" || activeFilter === "Materials";
-  const showDesigners = activeFilter === "All" || activeFilter === "Designers";
-  const showWorkers = activeFilter === "All" || activeFilter === "Workers";
 
   return (
     <>
       <Navbar />
 
-      <div className="partition-page fade-in">
-        
-        <div className="filter-button-group">
-          <button className={`filter-pill ${activeFilter === "All" ? "active" : ""}`} onClick={() => setActiveFilter("All")}>All</button>
-          <button className={`filter-pill ${activeFilter === "Finished" ? "active" : ""}`} onClick={() => { setActiveFilter("Finished"); scrollToSection(finishedRef); }}>Furniture & Products</button>
-          <button className={`filter-pill ${activeFilter === "Materials" ? "active" : ""}`} onClick={() => { setActiveFilter("Materials"); scrollToSection(rawRef); }}>Raw Materials</button>
-          <button className={`filter-pill ${activeFilter === "Designers" ? "active" : ""}`} onClick={() => { setActiveFilter("Designers"); scrollToSection(designersRef); }}>Designers</button>
-          <button className={`filter-pill ${activeFilter === "Workers" ? "active" : ""}`} onClick={() => { setActiveFilter("Workers"); scrollToSection(workersRef); }}>Service Workers</button>
-        </div>
+      {pageLoading && <LoadingSpinner message="Welcome to Core2Cover" />}
 
-        <div className="home-preview-container">
+      <div
+        className={`partition-page ${!pageLoading ? "fade-in" : ""}`}
+        style={{ visibility: pageLoading ? 'hidden' : 'visible' }}
+      >
+        <div className="partition-grid">
+          {/* Section 1: Finished Products */}
+          <Card
+            title="Finished Products"
+            images={finishedImages}
+            onClick={() => router.push("/productlisting?page=Finished%20Products&desc=Find%20the%20perfect%20product%20that%20enhances%20your%20quality%20of%20living.")}
+          />
 
-          {showFinished && (
-            <section ref={finishedRef} className="preview-section fade-in">
-              <div className="section-header">
-                <h2><FaBoxOpen className="header-icon" /> Finished Products</h2>
-                <button className="view-all-btn" onClick={() => router.push("/productlisting?page=Finished%20Products")}>View All <FaArrowRight /></button>
-              </div>
-              <div className="product-grid">
-                {finishedProducts.map(p => (
-                  <ProductCard key={p.id} {...p} title={p.name} origin={p.sellerBusiness ? `${p.sellerBusiness.city}` : "India"} />
-                ))}
-              </div>
-            </section>
-          )}
+          {/* Section 2: Raw Materials */}
+          <Card
+            title="Raw Materials"
+            images={rawImages}
+            onClick={() => router.push("/productlisting?page=Raw%20Materials&desc=Build%20better%20with%20high-grade%20interior%20raw%20materials.")}
+          />
 
-          {showMaterials && (
-            <section ref={rawRef} className="preview-section fade-in">
-              <div className="section-header">
-                <h2><FaLayerGroup className="header-icon" /> Raw Materials</h2>
-                <button className="view-all-btn" onClick={() => router.push("/productlisting?page=Raw%20Materials")}>View All <FaArrowRight /></button>
-              </div>
-              <div className="product-grid">
-                {rawMaterials.map(p => (
-                  <ProductCard key={p.id} {...p} title={p.name} origin={p.sellerBusiness ? `${p.sellerBusiness.city}` : "India"} />
-                ))}
-              </div>
-            </section>
-          )}
+          {/* Section 3: Designers */}
+          <Card
+            title="Interior & Product Designers"
+            images={designerImages}
+            onClick={() => router.push("/designers")}
+          />
 
-          {showDesigners && (
-            <section ref={designersRef} className="preview-section fade-in">
-              <div className="section-header">
-                <h2><FaUserTie className="header-icon" /> Top-Tier Designers</h2>
-                <button className="view-all-btn" onClick={() => router.push("/designers")}>Meet All <FaArrowRight /></button>
-              </div>
-              <div className="product-grid">
-                {designers.map(d => (<DesignerCard key={d.id} {...d} />))}
-              </div>
-            </section>
-          )}
-
-          {showWorkers && (
-            <section ref={workersRef} className="preview-section fade-in">
-              <div className="section-header">
-                <h2><FaTools className="header-icon" /> Expert Service Workers</h2>
-                {/* No View All Button Here */}
-              </div>
-              <div className="product-grid"> {/* Reusing product-grid class for consistency */}
-                {workers.map(w => (
-                  <div key={w.id} className="worker-card-vertical">
-                    <div className="worker-card-img-box">
-                        <Image src={w.image} alt={w.name} fill className="worker-img" />
-                    </div>
-                    <div className="worker-card-body">
-                        <span className="worker-card-brand">Core2Cover Verified</span>
-                        <h3 className="worker-card-title">{w.name}</h3>
-                        <a href={`tel:${w.phone}`} className="worker-card-call-btn">
-                            <FaPhoneAlt /> Call {w.phone}
-                        </a>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
+          {/* Section 4: Worker Service (Separate Component with Customize button) */}
+          <WorkerServiceCard 
+            title="Expert Service Workers" 
+            images={workerImages} 
+          />
         </div>
       </div>
 
