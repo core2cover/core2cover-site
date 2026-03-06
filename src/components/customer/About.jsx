@@ -40,7 +40,7 @@ const founderData = [
     instagram: "https://www.instagram.com/sohamphatak21/"
   },
   {
-    name: "Prathmesh Tanhaji Mali",
+    name: "Prathmesh Tanaji Mali",
     role: "Design and Marketing Head",
     image: Prathmesh,
     email: "Sonaigfx@gamil.com",
