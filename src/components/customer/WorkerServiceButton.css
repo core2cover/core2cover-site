@@ -1,7 +1,8 @@
-/* Container positioning */
+/* Global Container positioning - Always Top Right */
 .worker-service-global-wrapper {
     position: fixed;
-    top: 100px;
+    top: 90px;
+    /* Adjust this based on your exact Navbar height */
     right: 25px;
     z-index: 9999;
     display: flex;
@@ -10,6 +11,7 @@
     gap: 15px;
 }
 
+/* Background Dimmer when Overlay is Open */
 .worker-overlay-backdrop {
     position: fixed;
     top: 0;
@@ -36,16 +38,18 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
     position: relative;
+    white-space: nowrap;
+    /* Maintain attention pulse on all screens */
+    animation: pulse-attention 2s infinite;
 }
 
-/* Pulse animation for mobile focus */
 @keyframes pulse-attention {
     0% {
         box-shadow: 0 0 0 0 rgba(96, 110, 82, 0.4);
     }
 
     70% {
-        box-shadow: 0 0 0 15px rgba(96, 110, 82, 0);
+        box-shadow: 0 0 0 12px rgba(96, 110, 82, 0);
     }
 
     100% {
@@ -59,7 +63,7 @@
     animation: none;
 }
 
-/* List Overlay - Desktop Default */
+/* List Overlay - Appearance */
 .worker-list-overlay {
     background: white;
     width: 350px;
@@ -78,8 +82,10 @@
     margin-bottom: 20px;
 }
 
-.mobile-close-btn {
-    display: none;
+.worker-list-header h3 {
+    font-size: 1.1rem;
+    color: #333;
+    font-weight: 600;
 }
 
 .worker-category-bar {
@@ -123,8 +129,8 @@
 
 .worker-img-mini {
     position: relative;
-    width: 70px;
-    height: 70px;
+    width: 65px;
+    height: 65px;
     border-radius: 8px;
     overflow: hidden;
     flex-shrink: 0;
@@ -142,45 +148,49 @@
     font-size: 0.85rem;
 }
 
-/* RESPONSIVE DESIGN */
+/* RESPONSIVE OVERRIDES */
 @media (max-width: 768px) {
-  /* Ensure the text is visible instead of hidden */
-  .worker-btn-text { 
-    display: inline-block; 
-    font-size: 0.85rem;
-  }
-  
-  .worker-service-global-wrapper {
-    top: auto;
-    bottom: 570px; /* Elevated for thumb reach */
-    right: 15px;
-  }
 
-  .worker-customize-btn-global {
-    /* Change from circular FAB to a wide pill shape for visibility */
-    width: auto; 
-    height: auto;
-    padding: 10px 20px;
-    border-radius: 50px;
-    justify-content: center;
-    /* Maintain the pulse to grab attention */
-    animation: pulse-attention 2s infinite; 
-  }
+    /* Keep the top-right position fixed regardless of screen size */
+    .worker-service-global-wrapper {
+        top: 156px;
+        /* Adjust to stay visible on mobile navbar */
+        bottom: auto;
+        right: 15px;
+    }
 
-  /* Adjust the Bottom Sheet for mobile */
-  .worker-list-overlay {
-    position: fixed;
-    top: auto;
-    bottom: 0; 
-    left: 0;
-    width: 90vw;
-    max-height: 80vh;
-    border-radius: 25px 25px 0 0;
-    transform: none;
-    z-index: 10001;
-    padding: 25px 20px;
-  }
+    .worker-btn-text {
+        font-size: 0.8rem;
+    }
+
+    .worker-customize-btn-global {
+        padding: 8px 16px;
+    }
+
+    /* Keep the list overlay as a bottom sheet for mobile usability */
+    .worker-list-overlay {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        width: 90vw;
+        max-height: 75vh;
+        border-radius: 20px 20px 0 0;
+        padding: 20px;
+    }
+
+    .mobile-close-btn {
+        display: flex;
+        background: #f0f0f0;
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        align-items: center;
+        justify-content: center;
+    }
 }
+
 /* Animation */
 @keyframes slideIn {
     from {

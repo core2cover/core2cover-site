@@ -39,7 +39,6 @@ const WorkerServiceButton = () => {
           <div className="worker-list-overlay animate-slide-up">
             <div className="worker-list-header">
               <h3>We provide these services too..</h3>
-              <button className="mobile-close-btn" onClick={() => setIsOpen(false)}><FaTimes /></button>
             </div>
 
             <div className="worker-category-bar">
