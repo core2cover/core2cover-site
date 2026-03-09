@@ -329,11 +329,29 @@ const ProductInfo = () => {
     };
 
     const handleShare = async () => {
-        const shareData = { title: displayTitle, text: `Check out ${displayTitle} on Core2Cover!`, url: window.location.href };
+        // Construct the data with the actual product name
+        const shareData = {
+            title: displayTitle,
+            text: `Check out ${displayTitle} on Core2Cover!\n\n`,
+            url: window.location.href
+        };
+
         try {
-            if (navigator.share) { await navigator.share(shareData); }
-            else { await navigator.clipboard.writeText(window.location.href); triggerMsg("Link copied to clipboard!", "success"); }
-        } catch (err) { if (err.name !== "AbortError") triggerMsg("Sharing failed", "error"); }
+            if (navigator.share) {
+                // Mobile share sheet
+                await navigator.share(shareData);
+            } else {
+                // Fallback for desktop: Copy name + link to clipboard
+                const fullText = `${shareData.text}${shareData.url}`;
+                await navigator.clipboard.writeText(fullText);
+                triggerMsg("Product link and name copied!", "success");
+            }
+
+            // Log the share count to your database
+            await api.patch(`/product/${id}`);
+        } catch (err) {
+            if (err.name !== "AbortError") triggerMsg("Sharing failed", "error");
+        }
     };
 
     if (loading) return <LoadingSpinner message="Loading Product..." />;
