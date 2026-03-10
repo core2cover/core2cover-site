@@ -8,7 +8,7 @@ import "./Product_Info.css";
 import { addToCart } from "../../utils/cart";
 import api from "../../api/axios";
 import Image from "next/image";
-import { FaArrowLeft, FaShareAlt, FaTimes, FaPlay, FaPause, FaExpand, FaStore, FaTruckLoading, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaArrowLeft, FaShareAlt, FaTimes, FaPlay, FaPause, FaExpand, FaStore, FaTruckLoading, FaChevronLeft, FaChevronRight, FaCheckCircle, FaExclamationTriangle } from "react-icons/fa";
 import MessageBox from "../ui/MessageBox";
 import LoadingSpinner from "../ui/LoadingSpinner";
 
@@ -40,7 +40,7 @@ function VideoPlayer({ src, poster }) {
     }, []);
 
     const togglePlay = (e) => {
-        e.stopPropagation(); // Prevent triggering parent sliding/zoom
+        e.stopPropagation(); 
         const v = videoRef.current;
         if (!v) return;
         v.paused ? (v.play(), setPlaying(true)) : (v.pause(), setPlaying(false));
@@ -90,27 +90,22 @@ function VideoPlayer({ src, poster }) {
     );
 }
 
-/* ---------------------------
-    Main ProductInfo
-    --------------------------- */
 const ProductInfo = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const productId = searchParams.get("id");
 
     const [product, setProduct] = useState(null);
+    const [suggestions, setSuggestions] = useState([]); 
     const [loading, setLoading] = useState(true);
     const [descExpanded, setDescExpanded] = useState(false);
-    const [selectedMediaIndex, setSelectedMediaIndex] = useState(0); // Tracks index instead of object for sliding
+    const [selectedMediaIndex, setSelectedMediaIndex] = useState(0); 
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [quantity, setQuantity] = useState(1);
     const [isProcessing, setIsProcessing] = useState(false);
     const [msg, setMsg] = useState({ text: "", type: "success", show: false });
 
-    // --- SLIDING LOGIC STATES ---
     const [touchStartX, setTouchStartX] = useState(0);
-
-    // --- ZOOM & PAN STATES ---
     const [zoomLevel, setZoomLevel] = useState(1);
     const [position, setPosition] = useState({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
@@ -125,14 +120,14 @@ const ProductInfo = () => {
     const triggerMsg = (text, type = "success") => setMsg({ text, type, show: true });
 
     const handleWheel = useCallback((e) => {
-        e.preventDefault();
+        if (zoomLevel > 1) e.preventDefault();
         const delta = e.deltaY * -0.002;
         setZoomLevel(prev => {
             const nextZoom = Math.min(Math.max(prev + delta, 1), 5);
             if (nextZoom === 1) setPosition({ x: 0, y: 0 });
             return nextZoom;
         });
-    }, []);
+    }, [zoomLevel]);
 
     const handleMouseDown = (e) => {
         if (zoomLevel <= 1) return;
@@ -147,16 +142,11 @@ const ProductInfo = () => {
 
     const handleMouseUp = () => setIsDragging(false);
 
-    // --- UPDATED SLIDING & FULLSCREEN TOUCH LOGIC ---
-    const handleMainTouchStart = (e) => {
-        setTouchStartX(e.touches[0].clientX);
-    };
-
+    const handleMainTouchStart = (e) => setTouchStartX(e.touches[0].clientX);
     const handleMainTouchEnd = (e) => {
         const touchEndX = e.changedTouches[0].clientX;
         const diff = touchStartX - touchEndX;
-
-        if (Math.abs(diff) > 50) { // Threshold for swipe
+        if (Math.abs(diff) > 50) { 
             if (diff > 0) nextMedia();
             else prevMedia();
         }
@@ -188,25 +178,15 @@ const ProductInfo = () => {
         }
     };
 
-    const openFullscreen = () => setIsFullscreen(true);
-
+    const openFullscreen = () => {
+        setIsFullscreen(true);
+        window.history.pushState({ lightbox: true }, "", window.location.href);
+    };
 
     useEffect(() => {
-        const handleBackButton = () => {
-            if (isFullscreen) {
-                closeFullscreen();
-            }
-        };
-
-        if (isFullscreen) {
-            // Push a dummy state so the back button has something to "pop"
-            window.history.pushState({ lightbox: true }, "", window.location.href);
-            window.addEventListener("popstate", handleBackButton);
-        }
-
-        return () => {
-            window.removeEventListener("popstate", handleBackButton);
-        };
+        const handleBackButton = () => { if (isFullscreen) closeFullscreen(); };
+        window.addEventListener("popstate", handleBackButton);
+        return () => window.removeEventListener("popstate", handleBackButton);
     }, [isFullscreen]);
 
     const closeFullscreen = () => {
@@ -222,10 +202,12 @@ const ProductInfo = () => {
     useEffect(() => {
         if (!productId) return;
         setLoading(true);
+        window.scrollTo(0, 0); 
         api.get(`/product/${productId}`)
             .then((res) => {
                 const data = res.data?.payload ? decodePayload(res.data.payload) : res.data;
                 setProduct(data || null);
+                setSuggestions(data?.suggestions || []); 
             })
             .catch(() => triggerMsg("Failed to load product", "error"))
             .finally(() => setLoading(false));
@@ -266,7 +248,7 @@ const ProductInfo = () => {
 
     const displayTitle = title || name || "Product Details";
     const resolvedSeller = typeof seller === "string" ? seller : (seller?.name || "Verified Seller");
-    const displayDescription = description || "No description provided for this product.";
+    const displayDescription = description || "No description provided.";
 
     const tripCount = useMemo(() => {
         const q = Number(quantity) || 0;
@@ -329,29 +311,12 @@ const ProductInfo = () => {
     };
 
     const handleShare = async () => {
-        // Construct the data with the actual product name
-        const shareData = {
-            title: displayTitle,
-            text: `Check out ${displayTitle} on Core2Cover!\n\n`,
-            url: window.location.href
-        };
-
+        const shareData = { title: displayTitle, text: `Check out ${displayTitle} on Core2Cover!\n\n`, url: window.location.href };
         try {
-            if (navigator.share) {
-                // Mobile share sheet
-                await navigator.share(shareData);
-            } else {
-                // Fallback for desktop: Copy name + link to clipboard
-                const fullText = `${shareData.text}${shareData.url}`;
-                await navigator.clipboard.writeText(fullText);
-                triggerMsg("Product link and name copied!", "success");
-            }
-
-            // Log the share count to your database
+            if (navigator.share) { await navigator.share(shareData); }
+            else { await navigator.clipboard.writeText(`${shareData.text}${shareData.url}`); triggerMsg("Link copied to clipboard!", "success"); }
             await api.patch(`/product/${id}`);
-        } catch (err) {
-            if (err.name !== "AbortError") triggerMsg("Sharing failed", "error");
-        }
+        } catch (err) { if (err.name !== "AbortError") triggerMsg("Sharing failed", "error"); }
     };
 
     if (loading) return <LoadingSpinner message="Loading Product..." />;
@@ -371,31 +336,24 @@ const ProductInfo = () => {
                 </div>
 
                 <div className="pd-left">
-                    <div
-                        className="pd-image-box"
-                        style={{ position: "relative", height: 420, overflow: 'hidden' }}
-                        onTouchStart={handleMainTouchStart}
-                        onTouchEnd={handleMainTouchEnd}
-                    >
-                        {/* Slide Arrows for Desktop */}
+                    <div className="pd-image-box" style={{ position: "relative", height: 420, overflow: 'hidden', background: '#f8f8f8', borderRadius: '12px' }} onTouchStart={handleMainTouchStart} onTouchEnd={handleMainTouchEnd}>
                         {mediaList.length > 1 && (
                             <>
                                 <button className="pd-slide-btn prev" onClick={(e) => { e.stopPropagation(); prevMedia(); }}><FaChevronLeft /></button>
                                 <button className="pd-slide-btn next" onClick={(e) => { e.stopPropagation(); nextMedia(); }}><FaChevronRight /></button>
                             </>
                         )}
-
                         <div style={{ width: "100%", height: "100%", cursor: 'zoom-in' }} onClick={openFullscreen}>
                             {selectedMedia?.type === "video" ? (
                                 <VideoPlayer src={selectedMedia.src} poster={images?.[0]} />
                             ) : (
                                 <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                                    <Image
-                                        src={selectedMedia?.src}
-                                        alt={displayTitle}
-                                        fill
-                                        style={{ objectFit: 'contain' }}
-                                        unoptimized
+                                    <Image 
+                                        src={selectedMedia?.src} 
+                                        alt={displayTitle} 
+                                        fill 
+                                        style={{ objectFit: 'contain' }} // Ensures full image is visible
+                                        unoptimized 
                                     />
                                 </div>
                             )}
@@ -405,44 +363,28 @@ const ProductInfo = () => {
 
                     <div className="pd-thumbnails" style={{ marginTop: 14, overflowX: 'auto', whiteSpace: 'nowrap' }}>
                         {mediaList.map((m, i) => (
-                            <div
-                                key={i}
-                                className={`pd-thumb-container ${selectedMediaIndex === i ? "active-thumb" : ""}`}
-                                onClick={() => setSelectedMediaIndex(i)}
-                                style={{
-                                    width: 80, height: 80, borderRadius: 8, overflow: "hidden",
-                                    border: selectedMediaIndex === i ? "2px solid #4e5a44" : "1px solid #ddd",
-                                    marginRight: 10, display: "inline-block", cursor: "pointer", background: "#000"
-                                }}
-                            >
-                                {m.type === "video" ? (
-                                    <div style={{ width: "100%", height: "100%", position: 'relative', display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                        {images && images.length > 0 ? (
-                                            <Image
-                                                src={images[0].includes("cloudinary.com") ? images[0].replace("/upload/", "/upload/w_200,h_200,c_thumb,g_auto,q_auto,f_auto/") : images[0]}
-                                                fill unoptimized style={{ objectFit: 'cover', opacity: 0.6 }} alt="video-thumbnail"
-                                            />
-                                        ) : (
-                                            <div style={{ width: '100%', height: '100%', background: '#333' }} />
-                                        )}
-                                        <div style={{ position: 'absolute', zIndex: 2, background: 'rgba(0,0,0,0.4)', borderRadius: '50%', padding: '8px', display: 'flex' }}>
-                                            <FaPlay style={{ color: '#fff', fontSize: '16px' }} />
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                                        <Image src={m.src} alt="product-thumb" fill unoptimized style={{ objectFit: "cover" }} />
-                                    </div>
-                                )}
+                            <div key={i} className={`pd-thumb-container ${selectedMediaIndex === i ? "active-thumb" : ""}`} onClick={() => setSelectedMediaIndex(i)} style={{ width: 80, height: 80, borderRadius: 8, overflow: "hidden", border: selectedMediaIndex === i ? "2px solid #4e5a44" : "1px solid #ddd", marginRight: 10, display: "inline-block", cursor: "pointer", background: "#f8f8f8" }}>
+                                <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                    <Image src={m.src} alt="thumb" fill unoptimized style={{ objectFit: "contain" }} />
+                                    {m.type === "video" && <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.3)' }}><FaPlay color="#fff" /></div>}
+                                </div>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 <div className="pd-center">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
                         <h1 className="pd-title">{displayTitle}</h1>
-                        <span className={`availability-badge ${availability}`}>{availability?.replace('_', ' ')}</span>
+                        <span className={`availability-badge ${availability}`} style={{ 
+                            padding: '4px 10px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold', 
+                            display: 'inline-flex', alignItems: 'center', gap: '5px',
+                            background: availability === 'out_of_stock' ? '#ffebeb' : '#e6f4ea',
+                            color: availability === 'out_of_stock' ? '#d93025' : '#1e8e3e'
+                        }}>
+                            {availability === 'out_of_stock' ? <FaExclamationTriangle /> : <FaCheckCircle />}
+                            {availability?.replace('_', ' ').toUpperCase()}
+                        </span>
                     </div>
 
                     <div className="pd-rating-container">
@@ -459,28 +401,16 @@ const ProductInfo = () => {
                         <div className="pd-logistics-panel">
                             <h3 className="pd-logistics-title">Logistics & {isLiquid ? "Volume" : "Coverage"}</h3>
                             <div className="pd-logistics-grid">
-                                <div className="pd-input-group">
-                                    <label className="pd-input-label">Quantity ({unit || 'pcs'})</label>
-                                    <input type="number" min="1" className="pd-quantity-input" value={quantity} onChange={(e) => setQuantity(e.target.value === "" ? "" : Number(e.target.value))} disabled={availability === "out_of_stock"} />
-                                </div>
-                                <div className="pd-coverage-display">
-                                    <span className="pd-input-label">Total {isLiquid ? "Volume" : "Coverage"}</span>
-                                    <p className="pd-coverage-value">{totalCoverage} {isLiquid ? unit : "Sq. Ft"}</p>
-                                </div>
+                                <div className="pd-input-group"><label className="pd-input-label">Quantity ({unit || 'pcs'})</label><input type="number" min="1" className="pd-quantity-input" value={quantity} onChange={(e) => setQuantity(e.target.value === "" ? "" : Number(e.target.value))} disabled={availability === "out_of_stock"} /></div>
+                                <div className="pd-coverage-display"><span className="pd-input-label">Total {isLiquid ? "Volume" : "Coverage"}</span><p className="pd-coverage-value">{totalCoverage} {isLiquid ? unit : "Sq. Ft"}</p></div>
                             </div>
-                            <div className="pd-trip-estimator">
-                                <FaTruckLoading /> <span>Requires <strong className="pd-trip-highlight">{tripCount}</strong> delivery trip(s)</span>
-                            </div>
+                            <div className="pd-trip-estimator"><FaTruckLoading /> <span>Requires <strong className="pd-trip-highlight">{tripCount}</strong> delivery trip(s)</span></div>
                         </div>
                     )}
 
                     <hr className="pd-divider" />
-
                     <div className="pd-seller-section" style={{ marginTop: '15px' }}>
-                        <p className="pd-seller-info">
-                            <FaStore style={{ marginRight: '8px', color: '#4e5a44' }} />
-                            Sold by: <span className="pd-seller-name" style={{ fontWeight: '600' }}>{resolvedSeller}</span>
-                        </p>
+                        <p className="pd-seller-info"><FaStore style={{ marginRight: '8px', color: '#4e5a44' }} /> Sold by: <span className="pd-seller-name" style={{ fontWeight: '600' }}>{resolvedSeller}</span></p>
                     </div>
                 </div>
 
@@ -495,6 +425,32 @@ const ProductInfo = () => {
                     </div>
                 </div>
             </div>
+
+            {suggestions.length > 0 && (
+                <section className="pd-suggestions-section" style={{ padding: '40px 5%', background: '#fcfcfc' }}>
+                    <h2 className="pd-section-title" style={{ marginBottom: '25px', borderLeft: '4px solid #4e5a44', paddingLeft: '15px', color: '#333' }}>More Like This</h2>
+                    <div className="pd-suggestions-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '20px' }}>
+                        {suggestions.map((item) => (
+                            <div 
+                                key={item.id} 
+                                className="pd-suggestion-card" 
+                                onClick={() => router.push(`/productinfo?id=${item.id}`)}
+                                style={{ background: '#fff', padding: '15px', borderRadius: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.06)', cursor: 'pointer', position: 'relative' }}
+                            >
+                                <div style={{ position: 'relative', width: '100%', height: '180px', marginBottom: '12px', borderRadius: '10px', overflow: 'hidden', background: '#f9f9f9' }}>
+                                    <Image src={item.images?.[0] || "/placeholder.jpg"} alt={item.name} fill style={{ objectFit: 'contain' }} unoptimized />
+                                    {/* Availability Badge for Suggestions */}
+                                    <div style={{ position: 'absolute', top: '8px', right: '8px', padding: '3px 8px', borderRadius: '10px', fontSize: '0.65rem', fontWeight: 'bold', background: item.availability === 'out_of_stock' ? '#ffebeb' : '#e6f4ea', color: item.availability === 'out_of_stock' ? '#d93025' : '#1e8e3e' }}>
+                                        {item.availability === 'out_of_stock' ? 'OUT OF STOCK' : 'AVAILABLE'}
+                                    </div>
+                                </div>
+                                <h4 style={{ fontSize: '0.95rem', marginBottom: '8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#333' }}>{item.name}</h4>
+                                <p style={{ fontWeight: 'bold', color: '#4e5a44', margin: 0 }}>₹{item.price.toLocaleString()} <span style={{ fontSize: '0.7rem', color: '#888', fontWeight: 'normal' }}>/ {item.unit}</span></p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
 
             <section className="pd-reviews-section">
                 <div className="pd-reviews-container">
@@ -529,51 +485,37 @@ const ProductInfo = () => {
                 </div>
             </section>
 
-            {/* FULLSCREEN LIGHTBOX */}
             {isFullscreen && (
                 <div className="pd-fullscreen-overlay" onWheel={handleWheel} onClick={closeFullscreen}>
                     <button className="pd-fullscreen-close" onClick={closeFullscreen}><FaTimes /></button>
-
-                    {/* Fullscreen Navigation */}
                     {mediaList.length > 1 && (
                         <>
                             <button className="pd-slide-btn prev" onClick={(e) => { e.stopPropagation(); prevMedia(); }}><FaChevronLeft /></button>
                             <button className="pd-slide-btn next" onClick={(e) => { e.stopPropagation(); nextMedia(); }}><FaChevronRight /></button>
                         </>
                     )}
-
-                    <span className="lightbox-controls-aesthetic">
-                        {isMobile ? "Pinch to Zoom • Swipe to Move" : "Scroll to Zoom • Drag to Move"}
-                    </span>
-                    <div
-                        className="pd-fullscreen-content"
-                        onClick={(e) => e.stopPropagation()}
-                        onMouseMove={handleMouseMove}
-                        onMouseUp={handleMouseUp}
-                        onTouchStart={handleTouchStart}
-                        onTouchMove={handleTouchMove}
-                        onTouchEnd={() => setIsDragging(false)}
-                    >
+                    <span className="lightbox-controls-aesthetic">{isMobile ? "Pinch to Zoom • Swipe to Move" : "Scroll to Zoom • Drag to Move"}</span>
+                    <div className="pd-fullscreen-content" onClick={(e) => e.stopPropagation()} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={() => setIsDragging(false)}>
                         {selectedMedia?.type === "video" ? (
                             <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                                 <video src={selectedMedia.src} controls autoPlay style={{ maxWidth: "95%", maxHeight: "90vh" }} />
                             </div>
                         ) : (
-                            <img
-                                src={selectedMedia?.src}
-                                alt="Fullscreen"
-                                onMouseDown={handleMouseDown}
-                                draggable="false"
-                                style={{
-                                    transform: `translate(${position.x}px, ${position.y}px) scale(${zoomLevel})`,
-                                    transition: isDragging ? 'none' : 'transform 0.15s ease-out',
-                                    cursor: zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
-                                    touchAction: 'none',
-                                    maxWidth: "95%",
-                                    maxHeight: "90vh",
-                                    objectFit: "contain",
-                                    userSelect: "none"
-                                }}
+                            <img 
+                                src={selectedMedia?.src} 
+                                alt="Fullscreen" 
+                                onMouseDown={handleMouseDown} 
+                                draggable="false" 
+                                style={{ 
+                                    transform: `translate(${position.x}px, ${position.y}px) scale(${zoomLevel})`, 
+                                    transition: isDragging ? 'none' : 'transform 0.15s ease-out', 
+                                    cursor: zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default', 
+                                    touchAction: 'none', 
+                                    maxWidth: "95%", 
+                                    maxHeight: "90vh", 
+                                    objectFit: "contain", 
+                                    userSelect: "none" 
+                                }} 
                             />
                         )}
                     </div>

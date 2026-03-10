@@ -9,8 +9,6 @@ const encodeData = (data) => {
   return Buffer.from(jsonString).toString("base64");
 };
 
-// src/app/api/product/[id]/route.js
-
 export async function GET(request, { params }) {
   try {
     const resolvedParams = await params;
@@ -31,28 +29,42 @@ export async function GET(request, { params }) {
 
     if (!product) return NextResponse.json({ message: "Product not found" }, { status: 404 });
 
-    // FIX: Include description and ensure consistent naming
+    // --- FETCH SUGGESTIONS (More Like This) ---
+    const suggestions = await prisma.product.findMany({
+      where: {
+        category: product.category,
+        id: { not: id }, // Exclude current product
+        availability: { not: "out_of_stock" }
+      },
+      take: 6, // Limit to 6 suggestions
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        images: true,
+        unit: true
+      }
+    });
+
     const productData = {
       id: product.id,
       sellerId: product.sellerId,
-      title: product.name, // Frontend expects 'title'
-      name: product.name,  // Fallback for logic checks
+      title: product.name, 
+      name: product.name,  
       price: product.price,
       images: product.images,
-      description: product.description || "No description provided.", // ADDED
-      productType: product.productType, // Used for calculation logic
+      description: product.description || "No description provided.",
+      productType: product.productType, 
       unit: product.unit ?? "pcs",
       unitsPerTrip: product.unitsPerTrip ?? 1,
       conversionFactor: product.conversionFactor ?? 1,
-      
-      // FIX: Ensure seller is passed in a way the frontend can resolve
       seller: product.seller?.business?.businessName || product.seller?.name || "Verified Seller",
-      
       installationAvailable: product.seller?.delivery?.installationAvailable ?? "no",
       installationCharge: product.seller?.delivery?.installationCharge ?? 0,
       shippingChargeType: product.seller?.delivery?.shippingChargeType ?? "Paid",
       shippingCharge: product.seller?.delivery?.shippingCharge ?? 0,
-      availability: product.availability || "available"
+      availability: product.availability || "available",
+      suggestions: suggestions // Added to payload
     };
 
     return NextResponse.json({
