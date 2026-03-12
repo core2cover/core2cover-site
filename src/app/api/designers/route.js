@@ -36,11 +36,7 @@ export async function GET(request) {
       include: {
         profile: true,
         ratings: { select: { stars: true } },
-        works: {
-          select: {
-            image: true
-          }
-        }
+        works: true,
       }
     });
 
@@ -58,6 +54,7 @@ export async function GET(request) {
         bio: d.profile?.bio,
         avgRating: Number(avg),
         totalRatings: count,
+        works: d.works || [],
         // Match logic: Check if designer city is mentioned in user's address
         isLocal: userLocation && d.location &&
           userLocation.toLowerCase().includes(d.location.toLowerCase())
