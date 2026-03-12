@@ -1,4 +1,3 @@
-// src/app/ClientLayout.tsx
 "use client";
 
 import { Suspense, useState, useEffect } from "react";
@@ -7,7 +6,6 @@ import "./globals.css";
 import { NextAuthProvider } from "@/components/providers/NextAuthProvider";
 import { usePathname } from "next/navigation";
 import { Analytics } from '@vercel/analytics/next'; 
-// 1. Import your new global button
 import WorkerServiceButton from "@/components/customer/WorkerServiceButton";
 
 const geistSans = Geist({
@@ -31,13 +29,35 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // 1. Explicitly list only the pages where the button SHOULD appear
+  const allowedRoutes = [
+    "/",
+    "/productlisting",
+    "/productinfo",
+    "/checkout",
+    "/userprofile",
+    "/searchresults",
+    "/designers",
+    "/designerinfo",
+    "/cart"
+  ];
+
+  // 2. Exact matching logic to prevent showing on sub-pages like /sellersignup
+  const showWorkerButton = allowedRoutes.some(route => {
+    if (route === "/") {
+      return pathname === "/"; // Only show on exact home page
+    }
+    // For internal pages, ensure we match the base route correctly
+    return pathname === route || pathname.startsWith(`${route}/`) || pathname.startsWith(`${route}?`);
+  });
+
   const shouldDisableScroll = pathname === "/" && isDesktop;
 
   return (
     <div className={`${geistSans.variable} ${geistMono.variable} antialiased ${shouldDisableScroll ? "no-scroll" : ""}`}>
       <NextAuthProvider>
-        {/* 2. Place the button here so it appears on every page */}
-        <WorkerServiceButton />
+        {/* 3. Button will now be hidden on /sellersignup and other non-allowed pages */}
+        {showWorkerButton && <WorkerServiceButton />}
         
         <Suspense fallback={null}>
           {children}
