@@ -22,27 +22,28 @@ export async function GET(request) {
     }
 
     const designers = await prisma.designer.findMany({
-  where: {
-    availability: "Available",
-    isVerified: true, // - Only fetch designers who are verified
-    ...(search && {
-      OR: [
-        { fullname: { contains: search, mode: 'insensitive' } },
-        { location: { contains: search, mode: 'insensitive' } },
-        { profile: { bio: { contains: search, mode: 'insensitive' } } },
-      ]
-    })
-  },
-  include: {
-    profile: true,
-    ratings: { select: { stars: true } }
-  }
-});
+      where: {
+        availability: "Available",
+        isVerified: true, // - Only fetch designers who are verified
+        ...(search && {
+          OR: [
+            { fullname: { contains: search, mode: 'insensitive' } },
+            { location: { contains: search, mode: 'insensitive' } },
+            { profile: { bio: { contains: search, mode: 'insensitive' } } },
+          ]
+        })
+      },
+      include: {
+        profile: true,
+        ratings: { select: { stars: true } },
+        works: true,
+      }
+    });
 
     const formatted = designers.map(d => {
       const count = d.ratings.length;
       const avg = count > 0 ? (d.ratings.reduce((a, b) => a + b.stars, 0) / count).toFixed(1) : 0;
-      
+
       return {
         id: d.id,
         name: d.fullname,
@@ -53,9 +54,10 @@ export async function GET(request) {
         bio: d.profile?.bio,
         avgRating: Number(avg),
         totalRatings: count,
+        works: d.works || [],
         // Match logic: Check if designer city is mentioned in user's address
-        isLocal: userLocation && d.location && 
-                 userLocation.toLowerCase().includes(d.location.toLowerCase())
+        isLocal: userLocation && d.location &&
+          userLocation.toLowerCase().includes(d.location.toLowerCase())
       };
     });
 

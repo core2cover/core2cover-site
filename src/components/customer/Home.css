@@ -314,3 +314,47 @@
     font-size: 19px;
   }
 }
+
+.service-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-overlay-action {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.service-card:hover .card-overlay-action {
+  opacity: 1;
+}
+
+.customize-btn {
+  background-color: #606E52; /* Core2Cover Theme Color */
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.service-card:hover .customize-btn {
+  transform: translateY(0);
+}
+
+.customize-btn:hover {
+  background-color: #4a573f;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
