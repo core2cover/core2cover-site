@@ -88,7 +88,7 @@ export default async function CheckoutBluePage({ searchParams }: Props) {
     }
   }
 
-  const returnUrl = 'http://localhost:3005/console#';
+  const returnUrl = return_url || 'https://blue-by-imergene.vercel.app/console#';
 
   return (
     <CheckoutForm

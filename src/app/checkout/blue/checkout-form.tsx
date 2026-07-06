@@ -132,6 +132,13 @@ export function CheckoutForm({ sessionId, userId, returnUrl, email }: Props) {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 max-w-4xl mx-auto">
             <div className="lg:col-span-3">
               <div className="rounded-2xl border border-gray-800/80 p-6 bg-gray-900/20 backdrop-blur-sm">
+                <a
+                  href={returnUrl}
+                  className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-300 transition-colors mb-4"
+                >
+                  <i className="fa-solid fa-arrow-left"></i>
+                  Back to Console
+                </a>
                 <h2 className="text-base font-bold text-gray-100 mb-4">Contact Information</h2>
                 <div className="space-y-4">
                   <div>
