@@ -63,9 +63,6 @@ model CustomerOtp {
   @@index([email])
 }
 
-/// =========================
-/// SELLER (ACCOUNT)
-/// =========================
 model Seller {
   id            Int                    @id @default(autoincrement())
   name          String
@@ -82,7 +79,6 @@ model Seller {
   delivery      SellerDeliveryDetails?
 }
 
-/// SELLER OTP
 model SellerOtp {
   id        String   @id @default(uuid())
   email     String
@@ -94,9 +90,6 @@ model SellerOtp {
   @@index([email])
 }
 
-/// =========================
-/// SELLER BUSINESS DETAILS
-/// =========================
 model SellerBusinessDetails {
   id           Int      @id @default(autoincrement())
   businessName String
@@ -111,9 +104,6 @@ model SellerBusinessDetails {
   seller       Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
 }
 
-/// =========================
-/// SELLER DELIVERY DETAILS
-/// =========================
 model SellerDeliveryDetails {
   id                     Int      @id @default(autoincrement())
   sellerId               Int      @unique
@@ -131,9 +121,6 @@ model SellerDeliveryDetails {
   seller                 Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
 }
 
-/// =========================
-/// SELLER BANK DETAILS
-/// =========================
 model SellerBankDetails {
   id            Int      @id @default(autoincrement())
   accountHolder String
@@ -146,9 +133,6 @@ model SellerBankDetails {
   seller        Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
 }
 
-/// =========================
-/// PRODUCT
-/// =========================
 model Product {
   id               Int      @id @default(autoincrement())
   name             String
@@ -170,9 +154,6 @@ model Product {
   ratings          Rating[]
 }
 
-/// =========================
-/// ORDER (CUSTOMER LEVEL)
-/// =========================
 model Order {
   id             Int         @id @default(autoincrement())
   userId         Int
@@ -192,9 +173,6 @@ model Order {
   items          OrderItem[]
 }
 
-/// =========================
-/// ORDER ITEM (SELLER LEVEL)
-/// =========================
 model OrderItem {
   id                    Int            @id @default(autoincrement())
   orderId               Int

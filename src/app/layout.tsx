@@ -1,86 +1,24 @@
-import { Metadata } from "next";
-import ClientLayout from "./ClientLayout";
-import { Analytics } from "@vercel/analytics/react";
+import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: {
-    // Brand name + high-value keywords for all three target audiences
-    default: "Core2Cover (C2C) | Interior Marketplace for Products, Materials & Experts",
-    template: "%s | Core2Cover",
-  },
-  description: "India's complete interior hub. Shop readymade furniture & bathroom sets, buy raw materials like plywood & paint, or hire expert architects and designers for your next project.",
-  keywords: [
-    "Interior marketplace India",
-    "Interior products marketplace",
-    "Interior raw material marketplace",
-    "Buy furniture online",
-    "Sell furniture online",
-    "Interior raw materials suppliers",
-    "Plywood and paint suppliers",
-    "Bathroom fittings marketplace",
-    "Home decor marketplace",
-    "Hire interior designers and architects",
-    "Freelance interior designers platform",
-    "Interior sellers platform India",
-    "Core2Cover",
-    "C2C interiors"
-  ],
-  verification: {
-    google: "48hxJVOfuV3-SlJW8Bhs4y6wFM3OEiyDY0vr2dNld48",
-  },
-  metadataBase: new URL("https://core2cover.vercel.app"),
-  alternates: {
-    canonical: "/",
-  },
-  icons: {
-    icon: "/icon.png",
-    shortcut: "/icon.png",
-    apple: "/icon.png",
-  },
+  title: "Blue AI — Complete Your Subscription",
+  description: "Subscribe to Blue AI and unlock AI Chat, Code Autocomplete, Codebase Search, and more.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-
-  const jsonLd = [{
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Core2Cover",
-    "alternateName": ["C2C", "Core 2 Cover"],
-    "url": "https://core2cover.in"
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Core2Cover",
-      "url": "https://core2cover.in",
-      "logo": "https://core2cover.in/icon.png",
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+91-8275922422",
-        "contactType": "customer service",
-        "email": "team.core2cover@gmail.com"
-      }
-    }
- ];
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/icon.png" sizes="any" />
-        {/* Helps ChatGPT and other AI models categorize your business services */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          crossOrigin="anonymous"
+          referrerPolicy="no-referrer"
         />
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔷</text></svg>" />
       </head>
-      <body>
-        <ClientLayout>{children}</ClientLayout>
-        <Analytics />
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

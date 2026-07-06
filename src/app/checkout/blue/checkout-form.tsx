@@ -1,33 +1,118 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState, useCallback } from 'react';
+
+interface Props {
+  sessionId: string;
+  userId: string;
+  returnUrl: string;
+  email: string;
+}
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 const blueFeatures = [
-  "AI Chat",
-  "Code Autocomplete",
-  "Codebase Search",
-  "Syntax Checking",
-  "Cloud Models",
-  "Local Models",
-  "Multi-Agent Teams",
-  "Figma-to-Code",
-  "GitHub Integration",
-  "Web Search",
+  'AI Chat',
+  'Code Autocomplete',
+  'Codebase Search',
+  'Syntax Checking',
+  'Cloud Models',
+  'Local Models',
+  'Multi-Agent Teams',
+  'Figma-to-Code',
+  'GitHub Integration',
+  'Web Search',
 ];
 
-export default function CheckoutPage() {
-  const [payLoading, setPayLoading] = useState(false);
-  const [email, setEmail] = useState("");
+export function CheckoutForm({ sessionId, userId, returnUrl, email }: Props) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  function handlePayment(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email) return;
-    setPayLoading(true);
-    setTimeout(() => {
-      alert("Razorpay checkout will open here.");
-      setPayLoading(false);
-    }, 1000);
-  }
+  const loadRazorpayScript = useCallback(() => {
+    return new Promise<void>((resolve, reject) => {
+      if (window.Razorpay) {
+        resolve();
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('Failed to load Razorpay SDK'));
+      document.body.appendChild(script);
+    });
+  }, []);
+
+  const handlePayment = async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      await loadRazorpayScript();
+
+      const orderRes = await fetch('/api/checkout/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId }),
+      });
+
+      const orderData = await orderRes.json();
+
+      if (!orderRes.ok) {
+        throw new Error(orderData.error || 'Failed to create payment order');
+      }
+
+      const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+
+      const options = {
+        key: keyId,
+        amount: orderData.amount,
+        currency: orderData.currency || 'INR',
+        name: 'Blue AI',
+        description: 'Blue Plan — ₹149/month',
+        order_id: orderData.orderId,
+        prefill: { email },
+        theme: { color: '#3b82f6' },
+        handler: async function (response: any) {
+          const verifyRes = await fetch('/api/checkout/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId,
+              userId,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+            }),
+          });
+
+          const verifyData = await verifyRes.json();
+
+          if (!verifyRes.ok) {
+            setError(verifyData.error || 'Payment verification failed. Please contact support.');
+            setLoading(false);
+            return;
+          }
+
+          window.location.href = returnUrl;
+        },
+        modal: {
+          ondismiss: function () {
+            setLoading(false);
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong. Please try again.');
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#030712] flex items-center">
@@ -48,16 +133,15 @@ export default function CheckoutPage() {
             <div className="lg:col-span-3">
               <div className="rounded-2xl border border-gray-800/80 p-6 bg-gray-900/20 backdrop-blur-sm">
                 <h2 className="text-base font-bold text-gray-100 mb-4">Contact Information</h2>
-                <form onSubmit={handlePayment} className="space-y-4">
+                <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-400 mb-1.5">Email Address</label>
                     <input
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      required
-                      className="w-full px-4 py-2.5 rounded-xl bg-gray-900/60 border border-gray-800 text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      readOnly
+                      tabIndex={-1}
+                      className="w-full px-4 py-2.5 rounded-xl bg-gray-900/60 border border-gray-800 text-gray-100 text-sm opacity-70 cursor-not-allowed"
                     />
                   </div>
 
@@ -74,12 +158,20 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
+                  {error && (
+                    <div className="p-3 rounded-xl bg-red-900/20 border border-red-800/50 text-red-400 text-xs flex items-start gap-2">
+                      <i className="fa-solid fa-circle-exclamation mt-0.5"></i>
+                      <span>{error}</span>
+                    </div>
+                  )}
+
                   <button
-                    type="submit"
-                    disabled={payLoading}
+                    type="button"
+                    onClick={handlePayment}
+                    disabled={loading}
                     className="w-full px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 font-semibold text-white shadow-lg shadow-blue-500/20 hover:from-blue-500 hover:to-indigo-500 transition duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
-                    {payLoading ? (
+                    {loading ? (
                       <>
                         <i className="fa-solid fa-spinner animate-spin"></i>
                         Processing...
@@ -93,11 +185,11 @@ export default function CheckoutPage() {
                   </button>
 
                   <p className="text-xs text-gray-300 text-center">
-                    Your payment is secured by{" "}
+                    Your payment is secured by{' '}
                     <span className="text-blue-400 font-semibold">Razorpay</span>.
                     We never store your card details.
                   </p>
-                </form>
+                </div>
               </div>
             </div>
 
